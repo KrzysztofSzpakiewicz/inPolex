@@ -49,8 +49,8 @@ export const NotificationConfig: Partial<NotificationsConfig<VariantsMap>> = {
 		darkMode: true,
 		globalConfig: {
 			multiline: 5,
-			bgColor: '#353a42',
-			accentColor: '#f2f4f380',
+			bgColor: Colors.lightGray,
+			accentColor: Colors.red,
 		},
 	},
 };
