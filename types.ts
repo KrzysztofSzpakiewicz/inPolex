@@ -78,6 +78,47 @@ export type TextFieldParamList = {
 	inputStyle?: TextStyle;
 };
 
+//VerifyCodeScreen.tsx
+export interface StylesVerifyCodeScreen {
+	resendText: TextStyle;
+	container: ViewStyle;
+	textInputsContainer: ViewStyle;
+	textContainer: ViewStyle;
+	button: ViewStyle;
+	buttons: ViewStyle;
+	buttonText: TextStyle;
+	titleText: TextStyle;
+	errorContainer: ViewStyle;
+	errorText: TextStyle;
+	resendContainer: ViewStyle;
+	backButton: ViewStyle;
+}
+
+//CreateNewPassword.tsx
+export type CreateNewPasswordParams = {
+	email: string;
+	code: string;
+};
+export type StylesCreateNewPasswordScreen = {
+	backButton: ViewStyle;
+	container: ViewStyle;
+	textInputsContainer: ViewStyle;
+	textContainer: ViewStyle;
+	button: ViewStyle;
+	buttons: ViewStyle;
+	buttonText: TextStyle;
+	titleText: TextStyle;
+	errorContainer: ViewStyle;
+	errorText: TextStyle;
+};
+
+export type StateNumber = [number, React.Dispatch<React.SetStateAction<number>>];
+
+export type VerifyCodeParams = {
+	email: string;
+	fromScreenType: string;
+};
+
 export type StateString = [string, React.Dispatch<React.SetStateAction<string>>];
 
 export type StateBoolean = [boolean, React.Dispatch<React.SetStateAction<boolean>>];

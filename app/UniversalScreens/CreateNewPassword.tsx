@@ -1,7 +1,7 @@
 // CreateAccountScreen.tsx
 import React, { useEffect, useState } from 'react';
-import Button from '@/components/Button';
-import BackButton from '@/components/BackButton';
+import Button from '../../components/Button';
+import BackButton from '../../components/BackButton';
 import {
 	View,
 	Text,
@@ -11,30 +11,25 @@ import {
 	TouchableWithoutFeedback,
 	BackHandler,
 } from 'react-native';
-import TextField from '@/components/TextField';
+import TextField from '../../components/TextField';
 import axios, { AxiosResponse } from 'axios';
-import { StateString, CreateNewPasswordParams } from '@/types';
+import { StateString, CreateNewPasswordParams } from '../../types';
 import { styles } from './CreateNewPassword.styles';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-	useShowNotification,
-	ShowNotificationFunction,
-} from '@/components/Notification';
-import { REACT_APP_API_URL } from '@env';
+import { useShowNotification, ShowNotificationFunction } from '../../components/Notification';
+import { API_URL } from '@env';
 
 const CreateNewPassword: React.FC = () => {
 	const { showNotification }: { showNotification: ShowNotificationFunction } =
 		useShowNotification();
-	const params: CreateNewPasswordParams =
-		useLocalSearchParams<CreateNewPasswordParams>();
+	const params: CreateNewPasswordParams = useLocalSearchParams<CreateNewPasswordParams>();
 	const { email, code }: CreateNewPasswordParams = params;
 	const [pass, setPass]: StateString = useState<string>('');
 	const [repeatedPass, setRepeatedPass]: StateString = useState<string>('');
 
 	const validatePassword: (pass: string) => boolean = (pass: string) => {
-		const regex: RegExp =
-			/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+		const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!../..$%^&*-]).{8,}$/;
 
 		if (!regex.test(pass)) {
 			showNotification(
@@ -58,7 +53,7 @@ const CreateNewPassword: React.FC = () => {
 			} = { email: email, code: code, password: pass };
 			console.log('Sending payload:', payload);
 			const response: AxiosResponse = await axios.post(
-				`${REACT_APP_API_URL}/auth/password-reset`,
+				`${API_URL}/auth/password-reset`,
 				payload
 			);
 			if (response.status === 200) {
@@ -66,35 +61,25 @@ const CreateNewPassword: React.FC = () => {
 				showNotification('success', 'Success', 'Password changed!');
 			} else if (response.status === 400) {
 				console.error('Incorrect verification code.');
-				showNotification(
-					'error',
-					'Error',
-					'Incorrect verification code'
-				);
+				showNotification('error', 'Error', 'Incorrect verification code');
 			}
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				// Check if the server response contains validation errors
 				if (error.response?.data?.errors) {
-					const errorMessages: string =
-						error.response.data.errors.join(' '); // Join all error messages
+					const errorMessages: string = error.response.data.errors.join(' '); // Join all error messages
 					showNotification('error', 'Error', errorMessages);
 				} else {
 					// Handle other types of errors
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message ||
-							'An unexpected error occurred'
+						error.response?.data?.message || 'An unexpected error occurred'
 					);
 				}
 			} else {
 				console.error('Unexpected error:', error);
-				showNotification(
-					'error',
-					'Error',
-					'An unexpected error occurred'
-				);
+				showNotification('error', 'Error', 'An unexpected error occurred');
 			}
 		}
 	};
@@ -121,10 +106,7 @@ const CreateNewPassword: React.FC = () => {
 
 		// Clean up the listener when the component unmounts
 		return () => {
-			BackHandler.removeEventListener(
-				'hardwareBackPress',
-				handleBackPress
-			);
+			BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
 		};
 	}, []);
 

@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
-import { Colors, FontNames, FontSizes } from '@/constants/theme';
-import { StylesLoginScreen } from '@/types';
-import { windowWidth, windowHeight, isTablet } from '@/constants/screenSizes';
+import { Colors, FontNames, FontSizes } from '../../constants/theme';
+import { StylesLoginScreen } from '../../types';
+import { windowWidth, windowHeight, isTablet } from '../../constants/screenSizes';
 
 export const styles: StylesLoginScreen = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: Colors.backgroundColor,
+		backgroundColor: Colors.darkGrey,
 		alignItems: 'center',
 		justifyContent: 'space-between',
 	},
@@ -20,7 +20,7 @@ export const styles: StylesLoginScreen = StyleSheet.create({
 	},
 	titleText: {
 		fontSize: FontSizes.large,
-		color: Colors.white,
+		color: Colors.light,
 		fontFamily: FontNames.bold,
 	},
 	textContainer: {
@@ -62,7 +62,7 @@ export const styles: StylesLoginScreen = StyleSheet.create({
 		borderRadius: 30,
 	},
 	errorText: {
-		color: Colors.lightGrey50,
+		color: Colors.navyLight,
 		fontSize: FontSizes.small,
 		fontFamily: FontNames.bold,
 	},

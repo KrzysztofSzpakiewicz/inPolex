@@ -9,7 +9,6 @@ import {
 	TouchableWithoutFeedback,
 	View,
 } from 'react-native';
-import SwitchSelector from 'react-native-switch-selector';
 import Button from '../../components/Button';
 import TextField from '../../components/TextField';
 import { Colors, FontNames } from '../../constants/theme';
@@ -27,28 +26,18 @@ import { postLoginUser, sendUserVerification } from '../../constants/Connections
 const LoginScreen: React.FC = () => {
 	const { showNotification }: { showNotification: ShowNotificationFunction } =
 		useShowNotification();
-	const [activeOption, setActiveOption]: StateString = useState<string>('phone');
-	const [phone, setPhone]: StateString = useState<string>('+');
 	const [email, setEmail]: StateString = useState<string>('');
 	const [password, setPassword]: StateString = useState<string>('');
 
 	const validateInputs: () => boolean = (): boolean => {
 		const emailRegex: RegExp = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
-		const phoneRegex: RegExp = /^\+(\d{1,3})[-.\s]?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})$/;
 		const passwordRegex: RegExp =
 			/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
-		if (activeOption === 'phone') {
-			if (!phone.match(phoneRegex)) {
-				showNotification('warning', 'Warning', 'Wrong phone number');
-				return false;
-			}
-		} else {
-			if (!email.match(emailRegex)) {
-				showNotification('warning', 'Warning', 'Wrong email address');
+		if (!email.match(emailRegex)) {
+			showNotification('warning', 'Warning', 'Wrong email address');
 
-				return false;
-			}
+			return false;
 		}
 		if (!password.match(passwordRegex)) {
 			showNotification('warning', 'Warning', 'Wrong password');
@@ -62,9 +51,7 @@ const LoginScreen: React.FC = () => {
 		Keyboard.dismiss();
 		if (validateInputs()) {
 			//console.log('User details:', { phone, email, password });
-			alert(
-				`Sending data to server as JSON depending of choosen option ${phone}, ${email}, ${password}`
-			);
+			alert(`Sending data to server as JSON ${email}, ${password}`);
 			postData();
 		}
 	};
@@ -81,30 +68,18 @@ const LoginScreen: React.FC = () => {
 
 		return JSON.parse(jsonPayload); // Parse as JSON
 	}
-	const formatPhoneForSubmission: (phone: string) => string = (phone: string) => {
-		return phone.replace(/[^\d]/g, '');
-	};
 
 	const postData: () => Promise<void> = async (): Promise<void> => {
 		try {
-			const payload:
-				| { phoneNumber: string; password: string }
-				| { email: string; password: string } =
-				activeOption === 'phone'
-					? {
-							phoneNumber: formatPhoneForSubmission(phone),
-							password: password,
-						}
-					: {
-							email: email,
-							password: password,
-						};
+			const payload: { email: string; password: string } = {
+				email: email,
+				password: password,
+			};
 
 			const response: AxiosResponse = await postLoginUser(payload);
 			//console.log('Response', response.data);
 			if (response.data.verified === false) {
-				const verificationPayload: { phoneNumber: string } | { email: string } =
-					activeOption === 'email' ? { email: email } : { phoneNumber: phone };
+				const verificationPayload: { email: string } = { email: email };
 
 				console.log('Sending verification email payload:', verificationPayload);
 

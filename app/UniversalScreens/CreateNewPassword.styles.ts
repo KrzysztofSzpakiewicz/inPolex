@@ -1,20 +1,19 @@
-import { Colors, FontSizes, FontNames } from '@/constants/theme';
+import { Colors, FontSizes, FontNames } from '../../constants/theme';
 import { StyleSheet } from 'react-native';
-import { StylesCreateNewPasswordScreen } from '@/types';
-import { windowWidth, windowHeight, isTablet } from '@/constants/screenSizes';
+import { StylesCreateNewPasswordScreen } from '../../types';
+import { windowWidth, windowHeight, isTablet } from '../../constants/screenSizes';
 
 export const styles: StylesCreateNewPasswordScreen =
 	StyleSheet.create<StylesCreateNewPasswordScreen>({
 		container: {
 			flex: 1,
-			backgroundColor: Colors.backgroundColor,
+			backgroundColor: Colors.darkGrey,
 			alignItems: 'center',
 			justifyContent: 'space-between',
 		},
 		backButton: {
 			flexDirection: 'row',
 			width: windowWidth,
-
 			justifyContent: 'flex-start', // Align the back button to the left
 			alignItems: 'center',
 			paddingTop: 10,
@@ -22,7 +21,7 @@ export const styles: StylesCreateNewPasswordScreen =
 		},
 		titleText: {
 			fontSize: FontSizes.large,
-			color: Colors.white,
+			color: Colors.light,
 			fontFamily: FontNames.bold,
 		},
 		textContainer: {
@@ -38,9 +37,7 @@ export const styles: StylesCreateNewPasswordScreen =
 			marginTop: 60,
 			width: windowWidth * 0.5,
 			maxWidth: 550,
-			marginVertical: isTablet
-				? windowHeight * 0.01
-				: windowHeight * 0.01,
+			marginVertical: isTablet ? windowHeight * 0.01 : windowHeight * 0.01,
 		},
 		buttons: {
 			flex: 1,

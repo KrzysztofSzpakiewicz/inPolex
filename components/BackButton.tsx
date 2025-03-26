@@ -10,7 +10,7 @@ const BackButton: React.FC<BackButtonTypes> = ({
 }: BackButtonTypes): JSX.Element => {
 	return (
 		<TouchableOpacity style={buttonStyle} onPress={onPress}>
-			<Ionicons name={'chevron-back-outline'} size={40} color={Colors.lightGrey50} />
+			<Ionicons name={'chevron-back-outline'} size={40} color={Colors.light} />
 		</TouchableOpacity>
 	);
 };

@@ -25,6 +25,7 @@ const CreateAccountScreen: React.FC = () => {
 		useShowNotification();
 	const [Fname, setFname]: StateString = useState<string>('');
 	const [Sname, setSname]: StateString = useState<string>('');
+	const [username, setUsername]: StateString = useState<string>('');
 	const [pass, setPass]: StateString = useState<string>('');
 	const [email, setEmail]: StateString = useState<string>('');
 	const [phone, setPhone]: StateString = useState<string>('');
@@ -78,39 +79,21 @@ const CreateAccountScreen: React.FC = () => {
 		}
 
 		const emailRegex: RegExp = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
-		const phonewithCountryRegex: RegExp =
-			/^\+(\d{1,3})[-.\s]?(\d{3})[-.\s]?(\d{3})[-.\s]?(\d{3})$/;
-		const phonewithoutCountryRegex: RegExp = /^\+[-.\s]?(\d{3})[-.\s]?(\d{3})[-.\s]?(\d{3})$/;
+		const phonewithoutCountryRegex: RegExp = new RegExp('^[0-9]{9}$');
+
 		if (!email.match(emailRegex)) {
 			showNotification('warning', 'Warning', 'Please enter a valid email address');
 			return false;
 		}
 
-		if (phone.match(phonewithoutCountryRegex)) {
-			setPhone(`+48${phone}`);
-		}
-
-		if (!phone.match(phonewithCountryRegex)) {
+		if (!phone.match(phonewithoutCountryRegex)) {
 			console.log(phone);
-			showNotification(
-				'warning',
-				'Warning',
-				'Phone number must start with + and contain 10-15 digits'
-			);
+			showNotification('warning', 'Warning', 'Invalid phone number!');
 			return false;
 		}
 
 		// Validate password
 		return validatePassword(pass);
-	};
-
-	const handlePhoneChange: (input: string) => void = (input: string) => {
-		if (input === '' || input === '+') {
-			setPhone('+');
-		} else {
-			const formattedPhone: string = '+' + input.replace(/[^\d]/g, '');
-			setPhone(formattedPhone);
-		}
 	};
 
 	const formatPhoneForSubmission: (phone: string) => string = (phone: string) => {
@@ -122,6 +105,7 @@ const CreateAccountScreen: React.FC = () => {
 			const payload: {
 				phoneNumber: string;
 				firstName: string;
+				userName: string;
 				lastName: string;
 				email: string;
 				password: string;
@@ -129,6 +113,7 @@ const CreateAccountScreen: React.FC = () => {
 				phoneNumber: formatPhoneForSubmission(phone),
 				firstName: Fname,
 				lastName: Sname,
+				userName: username,
 				email: email,
 				password: pass,
 			};
@@ -234,9 +219,16 @@ const CreateAccountScreen: React.FC = () => {
 							}
 						/>
 						<TextField
+							autoCorrect={false}
+							placeholder="Username"
+							onTextChange={(text: string) =>
+								setUsername(text.trim().replace(/\s+/g, ''))
+							}
+						/>
+						<TextField
 							placeholder="Phone Number"
 							value={phone}
-							onTextChange={handlePhoneChange}
+							onTextChange={setPhone}
 							iconName="call"
 							keyboardType="phone-pad"
 						/>

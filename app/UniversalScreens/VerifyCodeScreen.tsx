@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Button from '@/components/Button';
-import BackButton from '@/components/BackButton';
+import Button from '../../components/Button';
+import BackButton from '../../components/BackButton';
 import {
 	View,
 	Text,
@@ -10,22 +10,14 @@ import {
 	TouchableWithoutFeedback,
 	TouchableOpacity,
 } from 'react-native';
-import TextField from '@/components/TextField';
+import TextField from '../../components/TextField';
 import axios, { AxiosResponse } from 'axios';
-import {
-	StateString,
-	StateBoolean,
-	StateNumber,
-	VerifyCodeParams,
-} from '../../types';
+import { StateString, StateBoolean, StateNumber, VerifyCodeParams } from '../../types';
 import { styles } from './VerifyCodeScreen.styles';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-	useShowNotification,
-	ShowNotificationFunction,
-} from '@/components/Notification';
-import { REACT_APP_API_URL } from '@env';
+import { useShowNotification, ShowNotificationFunction } from '../../components/Notification';
+import { API_URL } from '@env';
 
 const VerifyCodeScreen: React.FC = () => {
 	const { showNotification }: { showNotification: ShowNotificationFunction } =
@@ -34,8 +26,7 @@ const VerifyCodeScreen: React.FC = () => {
 	const { email, fromScreenType }: VerifyCodeParams = params;
 	const [code, setCode]: StateString = useState('');
 	const [timerSeconds, setTimerSeconds]: StateNumber = useState(0);
-	const [isButtonDisabled, setIsButtonDisabled]: StateBoolean =
-		useState(true);
+	const [isButtonDisabled, setIsButtonDisabled]: StateBoolean = useState(true);
 	const timerIntervalRef: React.MutableRefObject<NodeJS.Timeout | null> =
 		useRef<NodeJS.Timeout | null>(null);
 
@@ -54,21 +45,11 @@ const VerifyCodeScreen: React.FC = () => {
 			console.log('Sending payload:', payload);
 			const response: AxiosResponse =
 				fromScreenType === 'fromResetPassword'
-					? await axios.post(
-							`${REACT_APP_API_URL}/auth/password-reset/code`,
-							payload
-						)
-					: await axios.post(
-							`${REACT_APP_API_URL}/auth/verification`,
-							payload
-						);
+					? await axios.post(`${API_URL}/auth/password-reset/code`, payload)
+					: await axios.post(`${API_URL}/auth/verification`, payload);
 			if (response.status === 200) {
 				console.log('Account verified successfully!');
-				showNotification(
-					'success',
-					'Success',
-					'Verified successfully!'
-				);
+				showNotification('success', 'Success', 'Verified successfully!');
 				if (fromScreenType === 'fromRegisterScreen') {
 					router.dismissAll();
 					router.push('/LoginScreen/LoginScreen');
@@ -91,41 +72,31 @@ const VerifyCodeScreen: React.FC = () => {
 				}
 			} else if (response.status === 400) {
 				console.error('Incorrect verification code.');
-				showNotification(
-					'warning',
-					'Warning',
-					'Incorrect verification code'
-				);
+				showNotification('warning', 'Warning', 'Incorrect verification code');
 			}
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				// Check if the server response contains validation errors
 				if (error.response?.data?.errors) {
-					const errorMessages: string =
-						error.response.data.errors.join(' '); // Join all error messages
+					const errorMessages: string = error.response.data.errors.join(' '); // Join all error messages
 					showNotification('error', 'Error', errorMessages);
 				} else {
 					// Handle other types of errors
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message ||
-							'An unexpected error occurred'
+						error.response?.data?.message || 'An unexpected error occurred'
 					);
 				}
 			} else {
 				console.error('Unexpected error:', error);
-				showNotification(
-					'error',
-					'Error',
-					'An unexpected error occurred'
-				);
+				showNotification('error', 'Error', 'An unexpected error occurred');
 			}
 		}
 	};
 
 	const next: () => void = () => {
-		console.log(email);
+		console.log('email', email);
 
 		Keyboard.dismiss();
 		verifyCode();
@@ -151,11 +122,7 @@ const VerifyCodeScreen: React.FC = () => {
 
 	useEffect(() => {
 		startTimer();
-		showNotification(
-			'info',
-			'Info',
-			'Verification code was sent to your email'
-		);
+		showNotification('info', 'Info', 'Verification code was sent to your email');
 		return () => {
 			if (timerIntervalRef.current) {
 				clearInterval(timerIntervalRef.current);
@@ -176,14 +143,8 @@ const VerifyCodeScreen: React.FC = () => {
 
 			const response: AxiosResponse =
 				fromScreenType === 'fromResetPassword'
-					? await axios.post(
-							`${REACT_APP_API_URL}/auth/password-reset/email`,
-							payload
-						)
-					: await axios.post(
-							`${REACT_APP_API_URL}/auth/verification/email`,
-							payload
-						);
+					? await axios.post(`${API_URL}/auth/password-reset/email`, payload)
+					: await axios.post(`${API_URL}/auth/verification/email`, payload);
 
 			if (response.status === 200) {
 				console.log('Verification code sent.');
@@ -192,11 +153,7 @@ const VerifyCodeScreen: React.FC = () => {
 			startTimer(); // Restart the timer after resending the code
 		} catch (error) {
 			console.error('Error resending code:', error);
-			showNotification(
-				'error',
-				'Error',
-				'Failed to resend verification code'
-			);
+			showNotification('error', 'Error', 'Failed to resend verification code');
 		}
 	};
 
@@ -206,10 +163,7 @@ const VerifyCodeScreen: React.FC = () => {
 
 		// Use String.padStart to ensure two digits
 		const formattedMinutes: string = String(minutes).padStart(2, '0');
-		const formattedSeconds: string = String(remainingSeconds).padStart(
-			2,
-			'0'
-		);
+		const formattedSeconds: string = String(remainingSeconds).padStart(2, '0');
 
 		return `${formattedMinutes}:${formattedSeconds}`;
 	};

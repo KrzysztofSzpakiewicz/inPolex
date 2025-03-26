@@ -26,15 +26,15 @@ export const styles: StylesCreateAccountScreen = StyleSheet.create<StylesCreateA
 	textContainer: {
 		flex: 1,
 		justifyContent: 'flex-start',
-		marginTop: windowHeight * 0.075,
+		marginTop: windowHeight * 0.06,
 	},
 	textInputsContainer: {
-		marginTop: windowHeight * -0.17,
+		marginTop: windowHeight * -0.1,
 		flex: 1,
 		justifyContent: 'center',
 	},
 	button: {
-		marginTop: windowHeight * 0.1,
+		marginTop: windowHeight * 0.17,
 		width: windowWidth * 0.5,
 		maxWidth: 550,
 		marginVertical: isTablet ? windowHeight * 0.01 : windowHeight * 0.01,
