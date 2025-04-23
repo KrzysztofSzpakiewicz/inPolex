@@ -31,17 +31,17 @@ const CreateAccountScreen: React.FC = () => {
 	const [phone, setPhone]: StateString = useState<string>('');
 
 	const validatePassword: (pass: string) => boolean = (pass: string) => {
-		const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!..$%^&*-]).{8,}$/;
+		//const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!..$%^&*-]).{8,}$/;
 
-		if (!regex.test(pass)) {
-			showNotification(
-				'warning',
-				'Warning',
-				'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-			);
+		// if (!regex.test(pass)) {
+		// 	showNotification(
+		// 		'warning',
+		// 		'Warning',
+		// 		'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+		// 	);
 
-			return false;
-		}
+		// 	return false;
+		// }
 
 		// Jeśli wszystkie kryteria są spełnione
 		return true;
@@ -153,7 +153,7 @@ const CreateAccountScreen: React.FC = () => {
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message || 'An unexpected error occurred.'
+						error.response?.data?.message || 'An unexpected error occurred.',
 					);
 				}
 			} else {

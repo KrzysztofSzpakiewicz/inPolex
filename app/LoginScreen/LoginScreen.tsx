@@ -56,18 +56,18 @@ const LoginScreen: React.FC = () => {
 		}
 	};
 
-	function decodeJWT(token: string) {
-		const base64Url: string = token.split('.')[1]; // Get the payload part
-		const base64: string = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Fix padding
-		const jsonPayload: string = decodeURIComponent(
-			atob(base64)
-				.split('')
-				.map((c: string) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-				.join('')
-		);
+	// function decodeJWT(token: string) {
+	// 	const base64Url: string = token.split('.')[1]; // Get the payload part
+	// 	const base64: string = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Fix padding
+	// 	const jsonPayload: string = decodeURIComponent(
+	// 		atob(base64)
+	// 			.split('')
+	// 			.map((c: string) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+	// 			.join(''),
+	// 	);
 
-		return JSON.parse(jsonPayload); // Parse as JSON
-	}
+	// 	return JSON.parse(jsonPayload); // Parse as JSON
+	// }
 
 	const postData: () => Promise<void> = async (): Promise<void> => {
 		try {
@@ -97,37 +97,20 @@ const LoginScreen: React.FC = () => {
 				});
 			} else {
 				try {
-					const keys: string[] = [
-						'long_user_token',
-						'firstName',
-						'lastName',
-						'SSKeys',
-						'phoneNumber',
-					];
+					const keys: string[] = ['token', 'firstName', 'lastName', 'SSKeys'];
+					console.log(response.data);
 
 					await SecureStore.setItemAsync('SSKeys', JSON.stringify(keys));
-
-					await SecureStore.setItemAsync('long_user_token', response.data.accessToken);
+					await SecureStore.setItemAsync('token', response.data.token);
 					await SecureStore.setItemAsync('firstName', response.data.firstName);
-
 					await SecureStore.setItemAsync('lastName', response.data.lastName);
-
-					// Decode the token and extract the 'sub'
-					const decodedPayload: {
-						sub: '48502871468';
-						iat: 1736705924;
-						exp: 1737310724;
-					} = decodeJWT(response.data.accessToken);
-					const sub: string = decodedPayload.sub;
-
-					await SecureStore.setItemAsync('phoneNumber', sub);
 
 					console.log('Token saved successfully');
 				} catch (error) {
 					console.error('Error saving token:', error);
 				}
-				// TODO: PODMIENIC
-				// router.replace('/CommunicatorScreens/HomeScreen');
+
+				router.replace('/DashboardScreen/DashboardScreen');
 			}
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
@@ -140,7 +123,7 @@ const LoginScreen: React.FC = () => {
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message || 'An unexpected error occurred.'
+						error.response?.data?.message || 'An unexpected error occurred.',
 					);
 				}
 			} else {

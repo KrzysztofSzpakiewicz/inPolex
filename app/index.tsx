@@ -34,9 +34,9 @@ const StartScreen: React.FC = () => {
 			}
 		}
 		async function checkLongToken() {
-			const token: string | null = await SecureStore.getItemAsync('long_user_token');
+			const token: string | null = await SecureStore.getItemAsync('token');
 			if (token) {
-				// router.push('/CommunicatorScreens/HomeScreen');
+				router.push('/DashboardScreen/DashboardScreen');
 				console.log('Token found');
 			} else {
 				console.log('No token found');
@@ -68,7 +68,7 @@ const StartScreen: React.FC = () => {
 	};
 	const handleRegisterPress: () => void = () => {
 		console.log('redirected');
-		router.push('/RegisterScreens/CreateAccountScreen');
+		router.push('/RegisterScreen/CreateAccountScreen');
 	};
 
 	return (

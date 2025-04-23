@@ -57,7 +57,7 @@ const PasswordResetScreen: React.FC = () => {
 		if (validateInputs()) {
 			console.log('User details:', { phone, emailTemp });
 			alert(
-				`Sending data to server as JSON depending of choosen option ${phone}, ${emailTemp}`
+				`Sending data to server as JSON depending of choosen option ${phone}, ${emailTemp}`,
 			);
 			postData();
 		}
@@ -76,7 +76,7 @@ const PasswordResetScreen: React.FC = () => {
 
 			const response: AxiosResponse = await axios.post(
 				`${API_URL}/auth/password-reset/email`, //prosba o kod na maila
-				payload
+				payload,
 			);
 
 			//console.log('Response', response);
@@ -110,7 +110,7 @@ const PasswordResetScreen: React.FC = () => {
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message || 'An unexpected error occurred.'
+						error.response?.data?.message || 'An unexpected error occurred.',
 					);
 				}
 			} else {

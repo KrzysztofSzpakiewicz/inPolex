@@ -13,10 +13,7 @@ const Button: React.FC<ButtonParamList> = ({
 	textStyle,
 }: ButtonParamList): JSX.Element => {
 	return (
-		<TouchableOpacity
-			style={[styles.button, buttonStyle]}
-			onPress={onPress}
-		>
+		<TouchableOpacity style={[styles.button, buttonStyle]} onPress={onPress}>
 			<Text style={[styles.text, textStyle]}>{title}</Text>
 		</TouchableOpacity>
 	);

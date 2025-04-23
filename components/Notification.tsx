@@ -20,7 +20,7 @@ export type NotificationType = 'info' | 'success' | 'error' | 'warning';
 export type ShowNotificationFunction = (
 	type: NotificationType,
 	title: string,
-	description: string
+	description: string,
 ) => void;
 
 type UseShowNotificationReturn = {
@@ -33,7 +33,7 @@ export const useShowNotification: () => UseShowNotificationReturn = () => {
 	const showNotification: ShowNotificationFunction = (
 		type: NotificationType,
 		title: string,
-		description: string
+		description: string,
 	): void => {
 		notify(type, {
 			params: {

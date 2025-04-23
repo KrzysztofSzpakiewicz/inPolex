@@ -35,7 +35,7 @@ const CreateNewPassword: React.FC = () => {
 			showNotification(
 				'info',
 				'Info',
-				'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+				'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character',
 			);
 			return false;
 		}
@@ -54,7 +54,7 @@ const CreateNewPassword: React.FC = () => {
 			console.log('Sending payload:', payload);
 			const response: AxiosResponse = await axios.post(
 				`${API_URL}/auth/password-reset`,
-				payload
+				payload,
 			);
 			if (response.status === 200) {
 				console.log('Password changed!');
@@ -74,7 +74,7 @@ const CreateNewPassword: React.FC = () => {
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message || 'An unexpected error occurred'
+						error.response?.data?.message || 'An unexpected error occurred',
 					);
 				}
 			} else {

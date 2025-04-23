@@ -85,7 +85,7 @@ const VerifyCodeScreen: React.FC = () => {
 					showNotification(
 						'error',
 						'Error',
-						error.response?.data?.message || 'An unexpected error occurred'
+						error.response?.data?.message || 'An unexpected error occurred',
 					);
 				}
 			} else {

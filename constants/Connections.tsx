@@ -26,28 +26,28 @@ interface RegisterVerificationPayload {
 }
 
 export const postLoginUser: (payload: LoginPayload) => Promise<AxiosResponse> = async (
-	payload: LoginPayload
+	payload: LoginPayload,
 ): Promise<AxiosResponse> => {
 	console.log('sent to ', process.env.API_URL);
 	return await axios.post(`${API_URL}/auth/login`, payload);
 };
 
 export const sendUserVerification: (
-	payload: LoginVerificationPayload
+	payload: LoginVerificationPayload,
 ) => Promise<AxiosResponse> = async (payload: LoginVerificationPayload): Promise<AxiosResponse> => {
 	return await axios.post(`${API_URL}/auth/verification/email`, payload);
 };
 
 export const postRegisterUser: (payload: RegisterPayload) => Promise<AxiosResponse> = async (
-	payload: RegisterPayload
+	payload: RegisterPayload,
 ): Promise<AxiosResponse> => {
 	return await axios.post(`${API_URL}/auth/register`, payload);
 };
 
 export const sendVerificationEmail: (
-	payload: RegisterVerificationPayload
+	payload: RegisterVerificationPayload,
 ) => Promise<AxiosResponse> = async (
-	payload: RegisterVerificationPayload
+	payload: RegisterVerificationPayload,
 ): Promise<AxiosResponse> => {
 	return await axios.post(`${API_URL}/auth/verification/email`, payload);
 };
