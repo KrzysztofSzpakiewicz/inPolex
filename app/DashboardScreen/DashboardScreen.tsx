@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert, BackHandler, Text, View } from 'react-native';
+import { Alert, BackHandler, NativeEventSubscription, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 
@@ -41,10 +41,15 @@ const DashboardScreen: React.FC = () => {
 	};
 
 	useEffect(() => {
-		BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+		// Add event listener and store the subscription
+		const subscription: NativeEventSubscription = BackHandler.addEventListener(
+			'hardwareBackPress',
+			handleBackPress,
+		);
 
+		// Cleanup: Call remove() on the subscription
 		return () => {
-			BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+			subscription.remove();
 		};
 	}, []);
 

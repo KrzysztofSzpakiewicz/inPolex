@@ -11,6 +11,13 @@ export interface StylesStartScreen {
 	buttonText: TextStyle;
 }
 
+export interface ButtonParamList {
+	title: string;
+	onPress: () => void;
+	buttonStyle?: ViewStyle;
+	textStyle?: TextStyle;
+}
+
 export interface StylesLoginScreen {
 	container: ViewStyle;
 	backButton: ViewStyle;

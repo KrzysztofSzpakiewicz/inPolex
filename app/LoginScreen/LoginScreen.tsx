@@ -3,6 +3,7 @@ import {
 	BackHandler,
 	Keyboard,
 	KeyboardAvoidingView,
+	NativeEventSubscription,
 	Platform,
 	Text,
 	TouchableOpacity,
@@ -145,11 +146,15 @@ const LoginScreen: React.FC = () => {
 
 	// Add the back button listener when the component is mounted
 	useEffect(() => {
-		BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+		// Add event listener and store the subscription
+		const subscription: NativeEventSubscription = BackHandler.addEventListener(
+			'hardwareBackPress',
+			handleBackPress,
+		);
 
-		// Clean up the listener when the component unmounts
+		// Cleanup: Call remove() on the subscription
 		return () => {
-			BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+			subscription.remove();
 		};
 	}, []);
 	return (

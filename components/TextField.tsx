@@ -1,5 +1,5 @@
 // TextField.tsx
-import React, { useState, FC } from 'react';
+import React, { useState, FC, JSX } from 'react';
 import { TextInput, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/theme';
