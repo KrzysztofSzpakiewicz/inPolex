@@ -172,13 +172,13 @@ const CreateAccountScreen: React.FC = () => {
 	const next: () => void = () => {
 		Keyboard.dismiss();
 
-		if (validateInputs()) {
-			console.log('Verification details:', { email, phone });
-			// alert(
-			// 	`Sending data to server as JSON ${Fname}, ${Sname}, ${pass}, ${email}, ${phone}`
-			// );
-			postData();
-		}
+		//if (validateInputs()) {
+		console.log('Verification details:', { email, phone });
+		// alert(
+		// 	`Sending data to server as JSON ${Fname}, ${Sname}, ${pass}, ${email}, ${phone}`
+		// );
+		postData();
+		//}
 	};
 
 	// Add the back button listener when the component is mounted
