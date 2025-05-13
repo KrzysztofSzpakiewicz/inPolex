@@ -13,7 +13,7 @@ import {
 	Alert,
 	TouchableOpacity,
 } from 'react-native';
-import { styles } from './DashboardScreen.styles';
+import { styles } from './SettingsScreen.styles';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -24,60 +24,18 @@ import newPackage from '../../assets/newPackage.png';
 
 import { Image } from 'react-native';
 
-const DashboardScreen: React.FC = () => {
-	const handleSettingsPress: () => void = () => {
-		router.push({
-			pathname: '/SettingsScreen/SettingsScreen',
-		});
+const SettingsScreen: React.FC = () => {
+	const handleEditAccountDataPress: () => void = () => {
+		router.replace('/SettingsScreen/subScreens/EditDataScreen');
 	};
-	const handleNewPackagePress: () => void = () => {
-		router.push({
-			pathname: '/NewShipmentScreen/NewShipmentScreen',
-		});
+	const handleEditAddressesPress: () => void = () => {
+		router.replace('/SettingsScreen/subScreens/EditAddressesScreen');
 	};
 
-	const handleIncommingShipmentsPress: () => void = () => {
-		alert('Incomming Shipments no route');
-	};
-
-	const handleOutgoingShipmentsPress: () => void = () => {
-		alert('Outgoing Shipments no route');
-	};
 	const handleBackPress: () => boolean = () => {
-		Alert.alert(
-			'Logout',
-			'Are you sure you want to logout?',
-			[
-				{
-					text: 'Cancel',
-					style: 'cancel',
-				},
-				{
-					text: 'Yes',
-					onPress: async () => {
-						try {
-							const keysString: string | null =
-								await SecureStore.getItemAsync('SSKeys');
-							if (keysString) {
-								const keys: string[] = JSON.parse(keysString);
-								await Promise.all(
-									keys.map((key: string) => SecureStore.deleteItemAsync(key)),
-								);
-							}
-							router.replace('/LoginScreen/LoginScreen');
-						} catch (error) {
-							console.error('Error during logout:', error);
-						}
-					},
-				},
-			],
-			{ cancelable: false },
-		);
-		return true;
-	};
+		router.replace('/DashboardScreen/DashboardScreen');
 
-	const handleNavigation: (screen: string) => void = (screen: string) => {
-		router.push(`/${screen}`);
+		return true;
 	};
 
 	useEffect(() => {
@@ -101,35 +59,29 @@ const DashboardScreen: React.FC = () => {
 					<View style={styles.backButton}>
 						<BackButton onPress={handleBackPress}></BackButton>
 						<Image source={imPolex} resizeMode="contain" />
-						<Icon
+						{/* <Icon
 							name="settings"
 							size={30}
 							color={styles.titleText.color}
 							onPress={handleSettingsPress}
-						/>
+						/> */}
+						<View style={{ width: 30, height: 30 }}></View>
 					</View>
 
 					<View style={styles.buttons}>
 						<TouchableOpacity
-							onPress={() => handleIncommingShipmentsPress()}
+							onPress={() => handleEditAccountDataPress()}
 							style={styles.button}
 						>
 							<Image source={incomming} resizeMode="contain" />
-							<Text style={styles.text}>Incomming Shipments</Text>
+							<Text style={styles.text}>Edit Account Data</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
-							onPress={() => handleOutgoingShipmentsPress()}
+							onPress={() => handleEditAddressesPress()}
 							style={styles.button}
 						>
 							<Image source={outgoing} resizeMode="contain" />
-							<Text style={styles.text}>Outgoing Shipments</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={() => handleNewPackagePress()}
-							style={styles.button}
-						>
-							<Image source={newPackage} resizeMode="contain" />
-							<Text style={styles.text}>New Shipment</Text>
+							<Text style={styles.text}>Edit Addresses</Text>
 						</TouchableOpacity>
 					</View>
 				</KeyboardAvoidingView>
@@ -138,4 +90,4 @@ const DashboardScreen: React.FC = () => {
 	);
 };
 
-export default DashboardScreen;
+export default SettingsScreen;

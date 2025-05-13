@@ -33,6 +33,7 @@ const StartScreen: React.FC = () => {
 				setTimeout(() => SplashScreen.hideAsync(), 5000); // Hide splash screen after 5 seconds
 			}
 		}
+
 		async function checkLongToken() {
 			const token: string | null = await SecureStore.getItemAsync('token');
 			if (token) {
@@ -51,8 +52,8 @@ const StartScreen: React.FC = () => {
 
 		initializeApp();
 	}, []);
-	// eslint-disable-next-line @typescript-eslint/typedef
-	const onLayoutRootView = useCallback(async () => {
+
+	const onLayoutRootView: () => Promise<void> = useCallback(async () => {
 		if (appIsReady) {
 			await SplashScreen.hideAsync();
 		}

@@ -28,7 +28,7 @@ interface RegisterVerificationPayload {
 export const postLoginUser: (payload: LoginPayload) => Promise<AxiosResponse> = async (
 	payload: LoginPayload,
 ): Promise<AxiosResponse> => {
-	console.log('sent to ', process.env.API_URL);
+	console.log('sent to ', API_URL);
 	return await axios.post(`${API_URL}/auth/login`, payload);
 };
 

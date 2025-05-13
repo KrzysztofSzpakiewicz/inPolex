@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { JSX } from 'react';
 import { createNotifications } from 'react-native-notificated';
 import { NotificationConfig } from '../constants/theme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

@@ -32,17 +32,17 @@ const CreateAccountScreen: React.FC = () => {
 	const [phone, setPhone]: StateString = useState<string>('');
 
 	const validatePassword: (pass: string) => boolean = (pass: string) => {
-		//const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!..$%^&*-]).{8,}$/;
+		const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!..$%^&*-]).{8,}$/;
 
-		// if (!regex.test(pass)) {
-		// 	showNotification(
-		// 		'warning',
-		// 		'Warning',
-		// 		'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-		// 	);
+		if (!regex.test(pass)) {
+			showNotification(
+				'warning',
+				'Warning',
+				'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+			);
 
-		// 	return false;
-		// }
+			return false;
+		}
 
 		// Jeśli wszystkie kryteria są spełnione
 		return true;
@@ -172,13 +172,11 @@ const CreateAccountScreen: React.FC = () => {
 	const next: () => void = () => {
 		Keyboard.dismiss();
 
-		//if (validateInputs()) {
-		console.log('Verification details:', { email, phone });
-		// alert(
-		// 	`Sending data to server as JSON ${Fname}, ${Sname}, ${pass}, ${email}, ${phone}`
-		// );
-		postData();
-		//}
+		if (validateInputs()) {
+			console.log('Verification details:', { email, phone });
+
+			postData();
+		}
 	};
 
 	// Add the back button listener when the component is mounted

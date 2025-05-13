@@ -19,30 +19,4 @@ const Button: React.FC<ButtonParamList> = ({
 	);
 };
 
-// Styles for the CustomButton
-// const styles: ButtonStyles = StyleSheet.create({
-// 	button: {
-// 		backgroundColor: Colors.lightGrey50,
-// 		width: windowWidth / 2,
-// 		paddingHorizontal: 20,
-// 		paddingVertical: 12,
-// 		borderRadius: 30,
-// 		alignItems: 'center',
-// 		justifyContent: 'center',
-// 		elevation: 3, // Elevation for Android
-// 		shadowColor: '#000', // Shadow for iOS
-// 		shadowOffset: { width: 0, height: 4 },
-// 		shadowOpacity: 0.5,
-// 		shadowRadius: 3,
-// 	},
-// 	text: {
-// 		color: Colors.white, // Default text color
-// 		fontSize: FontSizes.medium, // Default text size
-// 		fontFamily: FontNames.bold, // Bold text
-// 		shadowOffset: { width: 0, height: 4 },
-// 		shadowOpacity: 0.2,
-// 		shadowRadius: 3,
-// 	},
-// });
-
 export default Button;

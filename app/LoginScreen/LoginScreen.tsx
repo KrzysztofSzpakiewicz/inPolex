@@ -98,15 +98,33 @@ const LoginScreen: React.FC = () => {
 				});
 			} else {
 				try {
-					const keys: string[] = ['token', 'firstName', 'lastName', 'SSKeys'];
-					console.log(response.data);
+					const keys = [
+						'token',
+						'firstName',
+						'lastName',
+						'id',
+						'email',
+						'userName',
+						'SSKeys',
+					];
 
-					await SecureStore.setItemAsync('SSKeys', JSON.stringify(keys));
-					await SecureStore.setItemAsync('token', response.data.token);
-					await SecureStore.setItemAsync('firstName', response.data.firstName);
-					await SecureStore.setItemAsync('lastName', response.data.lastName);
+					// Ensure all values are strings
+					const dataToStore = {
+						SSKeys: JSON.stringify(keys),
+						token: String(response.data.token),
+						firstName: String(response.data.firstName),
+						lastName: String(response.data.lastName),
+						id: String(response.data.id),
+						email: String(response.data.email),
+						userName: String(response.data.userName), // Note: userName vs. username in log
+					};
 
-					console.log('Token saved successfully');
+					// Save each key-value pair to SecureStore
+					for (const [key, value] of Object.entries(dataToStore)) {
+						await SecureStore.setItemAsync(key, value);
+					}
+
+					console.log('Token saved successfully', response.data.token);
 				} catch (error) {
 					console.error('Error saving token:', error);
 				}
