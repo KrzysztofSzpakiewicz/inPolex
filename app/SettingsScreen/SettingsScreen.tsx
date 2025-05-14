@@ -32,6 +32,43 @@ const SettingsScreen: React.FC = () => {
 		router.replace('/SettingsScreen/subScreens/EditAddressesScreen');
 	};
 
+	const handleLogOutPress: () => void = () => {
+		Alert.alert(
+			'Logout',
+			'Are you sure you want to logout?',
+			[
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+				{
+					text: 'Yes',
+					onPress: async () => {
+						try {
+							const keysString: string | null =
+								await SecureStore.getItemAsync('SSKeys');
+							if (keysString) {
+								const keys: string[] = JSON.parse(keysString);
+								await Promise.all(
+									keys.map((key: string) => SecureStore.deleteItemAsync(key)),
+								);
+							}
+							router.replace('/LoginScreen/LoginScreen');
+						} catch (error) {
+							console.error('Error during logout:', error);
+						}
+					},
+				},
+			],
+			{ cancelable: false },
+		);
+	};
+
+	const handleChangePasswordPress: () => void = () => {
+		alert('not implemented');
+		//router.replace('/SettingsScreen/subScreens/EditAddressesScreen');
+	};
+
 	const handleBackPress: () => boolean = () => {
 		router.replace('/DashboardScreen/DashboardScreen');
 
@@ -82,6 +119,17 @@ const SettingsScreen: React.FC = () => {
 						>
 							<Image source={outgoing} resizeMode="contain" />
 							<Text style={styles.text}>Edit Addresses</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => handleChangePasswordPress()}
+							style={styles.button}
+						>
+							<Image source={outgoing} resizeMode="contain" />
+							<Text style={styles.text}>Change Password</Text>
+						</TouchableOpacity>
+						<TouchableOpacity onPress={() => handleLogOutPress()} style={styles.button}>
+							<Image source={outgoing} resizeMode="contain" />
+							<Text style={styles.text}>Log Out</Text>
 						</TouchableOpacity>
 					</View>
 				</KeyboardAvoidingView>
