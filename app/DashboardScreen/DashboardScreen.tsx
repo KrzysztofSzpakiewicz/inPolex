@@ -36,7 +36,7 @@ const DashboardScreen: React.FC = () => {
 	let userId: string | null = null;
 	let userInt: number = 0;
 	const [stompClient, setStompClient] = useState<CompatClient | null>(null);
-
+	let response: AxiosResponse;
 	const [topicName, setTopicName]: StateString = useState<string>('');
 
 	const handleSettingsPress: () => void = () => {
@@ -53,9 +53,11 @@ const DashboardScreen: React.FC = () => {
 			userInt = Number(userId);
 
 			await connectToWs();
+			const data = JSON.stringify(response);
 			// Przenieś użytkownika tylko, jeśli POST się powiedzie
 			router.push({
 				pathname: '/NewShipmentScreen/NewShipmentScreen',
+				params: { data },
 			});
 		} catch (error) {
 			// Błędy są obsługiwane w postData, więc tutaj nie robimy nic dodatkowego
@@ -104,9 +106,9 @@ const DashboardScreen: React.FC = () => {
 		try {
 			console.log('Sending requrest');
 
-			const registerResponse: AxiosResponse = await postNewPackage();
-			setTopicName(registerResponse.data.topicName);
-			console.log('Response:', registerResponse.data.topicName);
+			response = await postNewPackage();
+			setTopicName(response.data.topicName);
+			console.log('Response:', response.data.topicName);
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				// Sprawdź, czy odpowiedź serwera zawiera błędy walidacji
