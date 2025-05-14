@@ -10,19 +10,21 @@ interface StylesEditAddressesScreen {
 	buttons: object;
 	button: object;
 	buttonText: object;
+	addressContainer: object;
+	addressTextContainer: object;
+	addressText: object;
+	deleteButton: object;
 }
 
 export const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Colors.darkGrey,
-		//alignItems: 'center',
-		//justifyContent: 'space-between',
 	},
 	backButton: {
 		flexDirection: 'row',
 		width: windowWidth,
-		justifyContent: 'space-between', // Rozmieszcza elementy równomiernie: lewo, środek, prawo
+		justifyContent: 'space-between',
 		alignItems: 'center',
 		paddingTop: 10,
 		paddingHorizontal: 20,
@@ -33,7 +35,6 @@ export const styles = StyleSheet.create({
 		color: Colors.light,
 		fontFamily: FontNames.bold,
 	},
-
 	titleText: {
 		fontSize: FontSizes.large,
 		color: Colors.light,
@@ -45,7 +46,6 @@ export const styles = StyleSheet.create({
 	},
 	buttons: {
 		flex: 1,
-		//justifyContent: 'flex-start',
 		width: '100%',
 		marginLeft: 2,
 		marginTop: 10,
@@ -62,10 +62,31 @@ export const styles = StyleSheet.create({
 		alignItems: 'center',
 		flexDirection: 'row',
 	},
-
 	buttonText: {
 		fontSize: isTablet ? FontSizes.large : FontSizes.medium,
 		color: Colors.light,
 		marginLeft: 10,
+	},
+	addressContainer: {
+		flexDirection: 'row',
+		margin: 10,
+		padding: 15,
+		borderColor: Colors.red,
+		borderWidth: 4,
+		borderRadius: 10,
+		width: '95%',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+	},
+	addressTextContainer: {
+		flex: 1,
+	},
+	addressText: {
+		fontSize: FontSizes.medium,
+		color: Colors.light,
+		fontFamily: FontNames.regular,
+	},
+	deleteButton: {
+		padding: 10,
 	},
 });

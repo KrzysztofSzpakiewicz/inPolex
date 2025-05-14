@@ -13,7 +13,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Colors } from '../../../constants/theme';
 import BackButton from '../../../components/BackButton';
 import { styles } from './LocationDetailsScreen.styles';
-
+import { postAddAddress } from '../../../constants/Connections';
 import { Image } from 'react-native';
 import imPolex from '../../../assets/inPolEx.png';
 
@@ -23,8 +23,8 @@ interface LocationDetails {
 	street: string;
 	number: string;
 	postalCode: string;
-	Latitude: number;
-	Longitude: number;
+	latitude: number;
+	longitude: number;
 	apartment?: string;
 }
 
@@ -63,8 +63,19 @@ const LocationDetailsScreen: React.FC = () => {
 		}));
 	};
 
-	const handleAdd = () => {
+	const handleAdd: () => void = () => {
 		// Placeholder for Add button functionality
+		const payload = {
+			country: locationDetails.country,
+			city: locationDetails.city,
+			street: locationDetails.street,
+			number: locationDetails.number,
+			postalCode: locationDetails.postalCode,
+			apartment: locationDetails.apartment || '',
+			latitude: Number(locationDetails.latitude),
+			longitude: Number(locationDetails.longitude),
+		};
+		postAddAddress(payload);
 		console.log('Add button pressed');
 	};
 

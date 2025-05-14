@@ -20,26 +20,32 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import { Colors } from '../../../constants/theme';
 import imPolex from '../../../assets/inPolEx.png';
+import { postEditUser } from '../../../constants/Connections';
 
 const EditDataScreen: React.FC = () => {
 	const [firstName, setFirstName] = useState<string>('');
 	const [lastName, setLastName] = useState<string>('');
 	const [userName, setUserName] = useState<string>('');
 	const [email, setEmail] = useState<string>('');
+	const [id, setId] = useState<string>('');
 
 	// Load data from SecureStore on mount
 	useEffect(() => {
 		const loadUserData = async () => {
 			try {
+				const storedId = await SecureStore.getItemAsync('id');
 				const storedFirstName = await SecureStore.getItemAsync('firstName');
 				const storedLastName = await SecureStore.getItemAsync('lastName');
 				const storedUserName = await SecureStore.getItemAsync('userName');
 				const storedEmail = await SecureStore.getItemAsync('email');
 
+				if (storedId) setId(storedId);
 				if (storedFirstName) setFirstName(storedFirstName);
 				if (storedLastName) setLastName(storedLastName);
 				if (storedUserName) setUserName(storedUserName);
 				if (storedEmail) setEmail(storedEmail);
+
+				console.log(email);
 			} catch (error) {
 				console.error('Error loading data from SecureStore:', error);
 			}
@@ -66,8 +72,21 @@ const EditDataScreen: React.FC = () => {
 	}, []);
 
 	// Placeholder function for save button
-	const handleSaveChanges = () => {
+	const handleSaveChanges: () => void = () => {
+		const payload = {
+			firstName: firstName,
+			lastName: lastName,
+			userName: userName,
+			email: email,
+		};
+
 		console.log('Save changes clicked', { firstName, lastName, userName, email });
+		try {
+			postEditUser(payload, Number(id));
+		} catch (error) {
+			console.log('Error saving changes:', error);
+		}
+
 		// TODO: Implement save logic (e.g., API call to update user data)
 	};
 
