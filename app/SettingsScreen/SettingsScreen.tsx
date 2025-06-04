@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import BackButton from '../../components/BackButton';
 import {
 	View,
@@ -21,13 +21,28 @@ import imPolex from '../../assets/inPolEx.png';
 import incomming from '../../assets/incomming.png';
 import outgoing from '../../assets/outgoing.png';
 import newPackage from '../../assets/newPackage.png';
-
 import { Image } from 'react-native';
 
 const SettingsScreen: React.FC = () => {
+	const [role, setRole] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchRole = async () => {
+			try {
+				const storedRole = await SecureStore.getItemAsync('role');
+				setRole(storedRole);
+			} catch (error) {
+				console.error('Error fetching role from SecureStore:', error);
+			}
+		};
+
+		fetchRole();
+	}, []);
+
 	const handleEditAccountDataPress: () => void = () => {
 		router.replace('/SettingsScreen/subScreens/EditDataScreen');
 	};
+
 	const handleEditAddressesPress: () => void = () => {
 		router.replace('/SettingsScreen/subScreens/EditAddressesScreen');
 	};
@@ -66,12 +81,14 @@ const SettingsScreen: React.FC = () => {
 
 	const handleChangePasswordPress: () => void = () => {
 		alert('not implemented');
-		//router.replace('/SettingsScreen/subScreens/EditAddressesScreen');
+	};
+
+	const handleChangeModePress: () => void = () => {
+		alert('Change Mode not implemented');
 	};
 
 	const handleBackPress: () => boolean = () => {
 		router.replace('/DashboardScreen/DashboardScreen');
-
 		return true;
 	};
 
@@ -96,12 +113,6 @@ const SettingsScreen: React.FC = () => {
 					<View style={styles.backButton}>
 						<BackButton onPress={handleBackPress}></BackButton>
 						<Image source={imPolex} resizeMode="contain" />
-						{/* <Icon
-							name="settings"
-							size={30}
-							color={styles.titleText.color}
-							onPress={handleSettingsPress}
-						/> */}
 						<View style={{ width: 30, height: 30 }}></View>
 					</View>
 
@@ -127,6 +138,15 @@ const SettingsScreen: React.FC = () => {
 							<Image source={outgoing} resizeMode="contain" />
 							<Text style={styles.text}>Change Password</Text>
 						</TouchableOpacity>
+						{role && role !== 'ROLE_USER' && (
+							<TouchableOpacity
+								onPress={() => handleChangeModePress()}
+								style={styles.button}
+							>
+								<Image source={newPackage} resizeMode="contain" />
+								<Text style={styles.text}>Change Mode</Text>
+							</TouchableOpacity>
+						)}
 						<TouchableOpacity onPress={() => handleLogOutPress()} style={styles.button}>
 							<Image source={outgoing} resizeMode="contain" />
 							<Text style={styles.text}>Log Out</Text>

@@ -32,7 +32,7 @@ const CreateAccountScreen: React.FC = () => {
 	const [phone, setPhone]: StateString = useState<string>('');
 
 	const validatePassword: (pass: string) => boolean = (pass: string) => {
-		const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!..$%^&*-]).{8,}$/;
+		const regex: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
 		if (!regex.test(pass)) {
 			showNotification(

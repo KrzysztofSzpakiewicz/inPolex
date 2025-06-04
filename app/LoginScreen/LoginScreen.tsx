@@ -97,6 +97,7 @@ const LoginScreen: React.FC = () => {
 					},
 				});
 			} else {
+				console.log(response.data);
 				try {
 					const keys = [
 						'token',
@@ -105,6 +106,7 @@ const LoginScreen: React.FC = () => {
 						'id',
 						'email',
 						'userName',
+						'role',
 						'SSKeys',
 					];
 
@@ -115,6 +117,7 @@ const LoginScreen: React.FC = () => {
 						firstName: String(response.data.firstName),
 						lastName: String(response.data.lastName),
 						id: String(response.data.id),
+						role: String(response.data.role),
 						email: String(response.data.email),
 						userName: String(response.data.userName), // Note: userName vs. username in log
 					};

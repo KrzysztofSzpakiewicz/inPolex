@@ -157,42 +157,14 @@ export const sendVerificationEmail: (
 	return await axios.post(`${API_URL}/auth/verification/email`, payload);
 };
 
-// export const connectToStomp: (topic: string) => Promise<Client> = async (
-// 	topic: string,
-// ): Promise<Client> => {
-// 	const token = await SecureStore.getItemAsync('token');
-// 	return new Promise((resolve, reject) => {
-// 		const client = new Client({
-// 			brokerURL: `ws://${API_URL.replace(/^https?:\/\//, '')}/${topic}`, // Zastąp http(s) na ws
-// 			connectHeaders: {
-// 				Authorization: token ? `Bearer ${token}` : '',
-// 			},
-// 			debug: str => {
-// 				console.log('STOMP Debug:', str);
-// 			},
-// 			reconnectDelay: 0,
-// 			heartbeatIncoming: 4000,
-// 			heartbeatOutgoing: 4000,
-// 		});
+export const searchUserByUsername = async (userName: string): Promise<AxiosResponse> => {
+	const token = await SecureStore.getItemAsync('token');
+	console.log('Searching user with username:', userName);
+	console.log('Sending request to:', `${API_URL}/user/adresses?field=userName&query=${userName}`);
 
-// 		client.onConnect = frame => {
-// 			console.log('Connected to STOMP:', frame);
-// 			client.subscribe(`/topic/${topic}`, message => {
-// 				console.log('Received STOMP message:', message.body);
-// 			});
-// 			resolve(client);
-// 		};
-
-// 		client.onStompError = frame => {
-// 			console.error('STOMP Error:', frame);
-// 			reject(new Error(`STOMP connection failed: ${frame.body}`));
-// 		};
-
-// 		client.onWebSocketError = error => {
-// 			console.error('WebSocket Error:', error);
-// 			reject(error);
-// 		};
-
-// 		client.activate();
-// 	});
-// };
+	return await axios.get(`${API_URL}/user/adresses?field=userName&query=${userName}`, {
+		headers: {
+			Authorization: token ? `Bearer ${token}` : undefined,
+		},
+	});
+};

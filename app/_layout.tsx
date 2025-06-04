@@ -7,6 +7,7 @@ import {
 	CreateNotificationsReturnType,
 	VariantsMap,
 } from 'react-native-notificated/lib/typescript/types';
+import { StripeProvider } from '@stripe/stripe-react-native'; // Import StripeProvider
 
 export const {
 	useNotifications,
@@ -18,22 +19,24 @@ export const {
 
 export default function RootLayout(): JSX.Element {
 	return (
-		<GestureHandlerRootView>
-			<>
-				<Stack
-					screenOptions={{
-						headerShown: false,
-					}}
-				>
-					<Stack.Screen
-						name="index"
-						options={{
-							gestureEnabled: false,
+		<StripeProvider publishableKey="pk_test_51RWCy7R6MsN6InsOPFr4PEaMcqr6wveiKGnKA2vx1pPhDUcS1BqjopNClB4jMySfK9HJqmoihcfheiCszn2tRQz400pw6Du4yi">
+			<GestureHandlerRootView>
+				<>
+					<Stack
+						screenOptions={{
+							headerShown: false,
 						}}
-					/>
-				</Stack>
-				<NotificationsProvider />
-			</>
-		</GestureHandlerRootView>
+					>
+						<Stack.Screen
+							name="index"
+							options={{
+								gestureEnabled: false,
+							}}
+						/>
+					</Stack>
+					<NotificationsProvider />
+				</>
+			</GestureHandlerRootView>
+		</StripeProvider>
 	);
 }

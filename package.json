@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/slider": "^4.5.6",
+    "@react-native-picker/picker": "^2.11.0",
     "@shopify/react-native-skia": "^2.0.0",
     "@stomp/stompjs": "^7.1.1",
     "@stripe/stripe-react-native": "0.45.0",
@@ -24,6 +25,7 @@
     "expo-secure-store": "~14.2.3",
     "expo-splash-screen": "^0.30.8",
     "expo-status-bar": "~2.2.3",
+    "lodash": "^4.17.21",
     "metro": "^0.82.2",
     "metro-config": "^0.82.2",
     "metro-resolver": "^0.82.2",
@@ -34,6 +36,7 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
+    "react-native-select-dropdown": "^4.0.1",
     "react-native-switch-selector": "^2.3.0",
     "react-native-vector-icons": "^10.2.0",
     "sockjs-client": "^1.6.1"

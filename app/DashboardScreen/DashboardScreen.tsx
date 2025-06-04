@@ -111,12 +111,10 @@ const DashboardScreen: React.FC = () => {
 			console.log('Response:', response.data.topicName);
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				// Sprawdź, czy odpowiedź serwera zawiera błędy walidacji
 				if (error.response?.data?.errors) {
 					const errorMessages: string = error.response.data.errors.join(' ');
 					showNotification('error', 'Error', errorMessages);
 				} else {
-					// Obsłuż inne rodzaje błędów
 					console.log(error.response?.data?.message);
 
 					showNotification(
