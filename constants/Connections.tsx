@@ -5,6 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Client, CompatClient } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useState } from 'react';
+
 interface LoginPayload {
 	phoneNumber?: string;
 	email?: string;
@@ -23,6 +24,7 @@ interface RegisterPayload {
 	email: string;
 	password: string;
 }
+
 interface EditUserPayload {
 	firstName: string;
 	lastName: string;
@@ -54,6 +56,12 @@ interface EditAddressPayload {
 
 interface RegisterVerificationPayload {
 	email: string;
+}
+
+interface CreatePaymentIntentPayload {
+	amount: number;
+	currency: string;
+	packageId: number;
 }
 
 export const postLoginUser: (payload: LoginPayload) => Promise<AxiosResponse> = async (
@@ -163,6 +171,22 @@ export const searchUserByUsername = async (userName: string): Promise<AxiosRespo
 	console.log('Sending request to:', `${API_URL}/user/adresses?field=userName&query=${userName}`);
 
 	return await axios.get(`${API_URL}/user/adresses?field=userName&query=${userName}`, {
+		headers: {
+			Authorization: token ? `Bearer ${token}` : undefined,
+		},
+	});
+};
+
+export const postCreatePaymentIntent: (
+	payload: CreatePaymentIntentPayload,
+) => Promise<AxiosResponse> = async (
+	payload: CreatePaymentIntentPayload,
+): Promise<AxiosResponse> => {
+	console.log('Sending', `${API_URL}/payment/create-payment-intent`);
+	console.log('Payload', payload);
+
+	const token = await SecureStore.getItemAsync('token');
+	return await axios.post(`${API_URL}/payment/create-payment-intent`, payload, {
 		headers: {
 			Authorization: token ? `Bearer ${token}` : undefined,
 		},

@@ -19,7 +19,7 @@ export const {
 
 export default function RootLayout(): JSX.Element {
 	return (
-		<StripeProvider publishableKey="pk_test_51RWCy7R6MsN6InsOPFr4PEaMcqr6wveiKGnKA2vx1pPhDUcS1BqjopNClB4jMySfK9HJqmoihcfheiCszn2tRQz400pw6Du4yi">
+		<StripeProvider publishableKey="pk_test_51RYBLPBOkUVkmTR49uvpaBU43kVvoXjHrPu8TqhlpHR7COVIHyeIXaA1ctRn7sJ7jFgZSkGuhHlzA55jwWwKFHgC00T0i1auuW">
 			<GestureHandlerRootView>
 				<>
 					<Stack

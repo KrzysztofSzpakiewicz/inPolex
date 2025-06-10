@@ -190,4 +190,19 @@ export const styles = StyleSheet.create({
 		borderColor: Colors.red, // Retained red border for selected items
 		borderWidth: 2, // Slightly thicker for emphasis
 	},
+	proceedButton: {
+		paddingVertical: 16, // Matches searchButton for consistency
+		paddingHorizontal: 30,
+		backgroundColor: Colors.red, // Uses same vibrant red as searchButton
+		borderRadius: 12, // Softer corners like searchButton
+		alignItems: 'center',
+		width: '100%',
+		marginTop: 20, // Added margin to separate from content above
+		marginBottom: 20, // Ensure spacing at the bottom
+		elevation: 3, // Subtle shadow for depth (Android)
+		shadowColor: '#000', // iOS shadow
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.2,
+		shadowRadius: 4,
+	},
 });

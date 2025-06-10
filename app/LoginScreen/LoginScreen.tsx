@@ -35,11 +35,11 @@ const LoginScreen: React.FC = () => {
 		const passwordRegex: RegExp =
 			/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
-		if (!email.match(emailRegex)) {
-			showNotification('warning', 'Warning', 'Wrong email address');
+		// if (!email.match(emailRegex)) {
+		// 	showNotification('warning', 'Warning', 'Wrong email address');
 
-			return false;
-		}
+		// 	return false;
+		// }
 		if (!password.match(passwordRegex)) {
 			showNotification('warning', 'Warning', 'Wrong password');
 			return false;
@@ -104,6 +104,7 @@ const LoginScreen: React.FC = () => {
 						'firstName',
 						'lastName',
 						'id',
+						'mode',
 						'email',
 						'userName',
 						'role',
@@ -119,6 +120,7 @@ const LoginScreen: React.FC = () => {
 						id: String(response.data.id),
 						role: String(response.data.role),
 						email: String(response.data.email),
+						mode: 'USER',
 						userName: String(response.data.userName), // Note: userName vs. username in log
 					};
 

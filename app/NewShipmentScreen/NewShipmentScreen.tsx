@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
-import { useStripe } from '@stripe/stripe-react-native'; // Import Stripe hook
+import { useStripe } from '@stripe/stripe-react-native';
 import BackButton from '../../components/BackButton';
 import { Colors, FontSizes, FontNames } from '../../constants/theme';
 import {
@@ -22,7 +22,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import imPolex from '../../assets/inPolEx.png';
 import { useLocalSearchParams } from 'expo-router';
-import SelectDropdown from 'react-native-select-dropdown';
+import { searchUserByUsername, postCreatePaymentIntent } from '../../constants/Connections'; // Added postCreatePaymentIntent import
+import { AxiosResponse } from 'axios';
 
 // Type definitions for props
 interface Address {
@@ -72,12 +73,12 @@ const NewShipmentScreen: React.FC = () => {
 	const { data } = useLocalSearchParams();
 	let parsedData: ShipmentData | null = null;
 	const [searchText, setSearchText] = useState('');
-	const [searchType, setSearchType] = useState('email');
 	const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
 	const [selectedDeliveryId, setSelectedDeliveryId] = useState<number | null>(null);
-	const [paymentAmount, setPaymentAmount] = useState<number>(1000); // Amount in cents (e.g., 10.00 PLN)
-	const { initPaymentSheet, presentPaymentSheet } = useStripe(); // Stripe hook
+	const [paymentAmount, setPaymentAmount] = useState<number>(1000); // Amount in cents
+	const [searchedAddresses, setSearchedAddresses] = useState<Address[]>([]); // State for searched addresses
+	const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
 	try {
 		parsedData = data ? JSON.parse(data as string).data : null;
@@ -90,9 +91,23 @@ const NewShipmentScreen: React.FC = () => {
 		return true;
 	};
 
-	const handleSearch = () => {
-		console.log(`Searching for ${searchText} with type ${searchType}`);
-		// Implement search logic here
+	const handleSearch = async () => {
+		if (!searchText.trim()) {
+			alert('Please enter a username to search.');
+			return;
+		}
+
+		try {
+			const response: AxiosResponse = await searchUserByUsername(searchText);
+			const addresses = response.data.adresses || [];
+			setSearchedAddresses(addresses);
+			if (addresses.length === 0) {
+				alert('No addresses found for this username.');
+			}
+		} catch (error) {
+			console.error('Error searching user:', error);
+			alert('An error occurred while searching for the user.');
+		}
 	};
 
 	const handleProceedToPayment = async () => {
@@ -103,16 +118,26 @@ const NewShipmentScreen: React.FC = () => {
 			return;
 		}
 
-		// Hardcoded client secret for TESTING ONLY (replace with your test client secret)
-		const clientSecret = 'pi_3RWDSxR6MsN6InsO1TflnJhN_secret_EkmlPUex4LMBRuPsDnXuv9taN'; // Obtain from Stripe Dashboard or CLI
-
 		try {
-			// Initialize the Payment Sheet
+			// Make POST request to create payment intent
+			const response: AxiosResponse = await postCreatePaymentIntent({
+				amount: paymentAmount * 100, // Amount in cents
+				currency: 'pln',
+				packageId: parsedData?.packageId,
+			});
+			console.log('Payment intent response:', response.data);
+
+			const clientSecret = response.data.clientSecret;
+
+			if (!clientSecret) {
+				throw new Error('No client secret received from server.');
+			}
+
+			// Initialize payment sheet with the client secret
 			const { error: initError } = await initPaymentSheet({
 				paymentIntentClientSecret: clientSecret,
 				merchantDisplayName: 'Your App Name',
-				// Optional: Configure appearance to match your theme
-				style: 'alwaysDark', // or 'alwaysLight' to match your app's theme
+				style: 'alwaysDark',
 			});
 
 			if (initError) {
@@ -121,7 +146,7 @@ const NewShipmentScreen: React.FC = () => {
 				return;
 			}
 
-			// Present the Payment Sheet
+			// Present payment sheet
 			const { error: paymentError } = await presentPaymentSheet();
 
 			if (paymentError) {
@@ -129,8 +154,6 @@ const NewShipmentScreen: React.FC = () => {
 				alert(`Payment failed: ${paymentError.message}`);
 			} else {
 				alert('Payment successful!');
-				// Optionally, navigate to a confirmation screen
-				// router.push('/PaymentConfirmationScreen');
 			}
 		} catch (error) {
 			console.error('Payment error:', error);
@@ -157,8 +180,6 @@ const NewShipmentScreen: React.FC = () => {
 		);
 	}
 
-	const searchOptions = ['email', 'phoneNumber', 'username'];
-
 	return (
 		<SafeAreaView style={styles.container}>
 			<KeyboardAvoidingView
@@ -179,35 +200,15 @@ const NewShipmentScreen: React.FC = () => {
 						</View>
 
 						<View style={styles.formContainer}>
-							{/* Search Input and Selector */}
+							{/* Search Input */}
 							<View style={styles.searchContainer}>
-								<Text style={styles.label}>Search:</Text>
+								<Text style={styles.label}>Search by Username:</Text>
 								<TextInput
 									style={styles.input}
 									value={searchText}
 									onChangeText={setSearchText}
-									placeholder="Search user"
+									placeholder="Enter username"
 									placeholderTextColor={Colors.light}
-								/>
-								<SelectDropdown
-									data={searchOptions}
-									onSelect={selectedItem => setSearchType(selectedItem)}
-									defaultValue={searchType}
-									buttonStyle={styles.selector}
-									buttonTextStyle={{
-										fontSize: FontSizes.medium,
-										color: Colors.light,
-										fontFamily: FontNames.regular,
-									}}
-									dropdownStyle={{
-										backgroundColor: Colors.grey,
-										borderRadius: 8,
-									}}
-									rowTextStyle={{
-										fontSize: FontSizes.medium,
-										color: Colors.light,
-										fontFamily: FontNames.regular,
-									}}
 								/>
 								<TouchableOpacity
 									style={styles.searchButton}
@@ -217,6 +218,52 @@ const NewShipmentScreen: React.FC = () => {
 								</TouchableOpacity>
 							</View>
 
+							{/* Display searched addresses */}
+							{searchedAddresses.length > 0 && (
+								<View style={styles.section}>
+									<Text style={styles.sectionTitle}>Searched Addresses:</Text>
+									{searchedAddresses.map((address, index) => (
+										<TouchableOpacity
+											key={address.id}
+											style={[
+												styles.itemContainer,
+												selectedAddressId === address.id &&
+													styles.selectedPackageItem,
+											]}
+											onPress={() => setSelectedAddressId(address.id)}
+										>
+											<Text style={styles.itemTitle}>
+												Address {index + 1}:
+											</Text>
+											<Text style={styles.itemText}>
+												Country: {address.country}
+											</Text>
+											<Text style={styles.itemText}>
+												City: {address.city}
+											</Text>
+											<Text style={styles.itemText}>
+												Street: {address.street}
+											</Text>
+											<Text style={styles.itemText}>
+												Number: {address.number}
+											</Text>
+											<Text style={styles.itemText}>
+												Postal Code: {address.postalCode}
+											</Text>
+											<Text style={styles.itemText}>
+												Apartment: {address.apartment || 'None'}
+											</Text>
+											<Text style={styles.itemText}>
+												Latitude: {address.latitude.toFixed(6)}
+											</Text>
+											<Text style={styles.itemText}>
+												Longitude: {address.longitude.toFixed(6)}
+											</Text>
+										</TouchableOpacity>
+									))}
+								</View>
+							)}
+
 							{/* Display packageId */}
 							<View style={styles.section}>
 								<Text style={styles.sectionTitle}>Package ID:</Text>
@@ -225,7 +272,7 @@ const NewShipmentScreen: React.FC = () => {
 
 							{/* Display addresses with selection */}
 							<View style={styles.section}>
-								<Text style={styles.sectionTitle}>Addresses:</Text>
+								<Text style={styles.sectionTitle}>Your Addresses:</Text>
 								{parsedData.adresses?.length > 0 ? (
 									parsedData.adresses.map((address, index) => (
 										<TouchableOpacity
@@ -285,7 +332,7 @@ const NewShipmentScreen: React.FC = () => {
 											]}
 											onPress={() => {
 												setSelectedPackageId(pkg.id);
-												setPaymentAmount(pkg.price * 100); // Update payment amount based on selected package (in cents)
+												setPaymentAmount(pkg.price * 100);
 											}}
 										>
 											<Text style={styles.itemTitle}>
@@ -337,7 +384,7 @@ const NewShipmentScreen: React.FC = () => {
 												setSelectedDeliveryId(delivery.id);
 												setPaymentAmount(
 													prev => prev + delivery.price * 100,
-												); // Add delivery price to payment amount (in cents)
+												);
 											}}
 										>
 											<Text style={styles.itemTitle}>

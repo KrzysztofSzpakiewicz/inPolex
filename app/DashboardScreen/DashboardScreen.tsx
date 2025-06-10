@@ -24,7 +24,6 @@ import newPackage from '../../assets/newPackage.png';
 import { useShowNotification, ShowNotificationFunction } from '../../components/Notification';
 import axios, { AxiosResponse } from 'axios';
 import { postNewPackage, sendVerificationEmail } from '../../constants/Connections';
-
 import { Image } from 'react-native';
 import { StateString } from '@/types';
 import { CompatClient, Stomp } from '@stomp/stompjs';
@@ -38,29 +37,39 @@ const DashboardScreen: React.FC = () => {
 	const [stompClient, setStompClient] = useState<CompatClient | null>(null);
 	let response: AxiosResponse;
 	const [topicName, setTopicName]: StateString = useState<string>('');
+	const [mode, setMode] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchMode = async () => {
+			try {
+				const storedMode = await SecureStore.getItemAsync('mode');
+				setMode(storedMode || 'USER');
+			} catch (error) {
+				console.error('Error fetching mode from SecureStore:', error);
+			}
+		};
+
+		fetchMode();
+	}, []);
 
 	const handleSettingsPress: () => void = () => {
 		router.push({
 			pathname: '/SettingsScreen/SettingsScreen',
 		});
 	};
+
 	const handleNewPackagePress: () => Promise<void> = async () => {
 		try {
-			// Wykonaj zapytanie POST
 			await postData();
-
 			userId = await SecureStore.getItemAsync('id');
 			userInt = Number(userId);
-
 			await connectToWs();
 			const data = JSON.stringify(response);
-			// Przenieś użytkownika tylko, jeśli POST się powiedzie
 			router.push({
 				pathname: '/NewShipmentScreen/NewShipmentScreen',
 				params: { data },
 			});
 		} catch (error) {
-			// Błędy są obsługiwane w postData, więc tutaj nie robimy nic dodatkowego
 			console.log('Post failed, navigation prevented.');
 		}
 	};
@@ -75,19 +84,17 @@ const DashboardScreen: React.FC = () => {
 			{ userId: userInt },
 			() => {
 				setStompClient(client);
-
 				connectedToWs(client);
 			},
 			(error: string) => {
 				console.error('WebSocket connection error:', error);
-				setTimeout(() => connectToWs(), 3000); // Retry after 3 seconds
+				setTimeout(() => connectToWs(), 3000);
 			},
 		);
 	};
 
 	const connectedToWs: (client: CompatClient) => void = (client: CompatClient) => {
 		if (client) {
-			//package data do zmiany na tipicname
 			client.subscribe(`/topic/package-data`, messageRecivedFromWs);
 		} else {
 			console.error('STOMP client is not initialized properly.');
@@ -98,14 +105,11 @@ const DashboardScreen: React.FC = () => {
 		body: string;
 	}) => {
 		console.log(payload.body);
-
-		//const receivedMessage = JSON.parse(payload.body);
 	};
 
 	const postData: () => Promise<void> = async (): Promise<void> => {
 		try {
 			console.log('Sending requrest');
-
 			response = await postNewPackage();
 			setTopicName(response.data.topicName);
 			console.log('Response:', response.data.topicName);
@@ -116,7 +120,6 @@ const DashboardScreen: React.FC = () => {
 					showNotification('error', 'Error', errorMessages);
 				} else {
 					console.log(error.response?.data?.message);
-
 					showNotification(
 						'error',
 						'Error',
@@ -127,7 +130,6 @@ const DashboardScreen: React.FC = () => {
 				console.error('Unexpected error:', error);
 				showNotification('error', 'Error', 'An unexpected error occurred.');
 			}
-			// Rzuć błąd, aby zatrzymać nawigację w handleNewPackagePress
 			throw error;
 		}
 	};
@@ -139,6 +141,15 @@ const DashboardScreen: React.FC = () => {
 	const handleOutgoingShipmentsPress: () => void = () => {
 		alert('Outgoing Shipments no route');
 	};
+
+	const handleViewAssignmentsPress: () => void = () => {
+		alert('View Assignments no route');
+	};
+
+	const handleStartDrivingPress: () => void = () => {
+		alert('Start Driving no route');
+	};
+
 	const handleBackPress: () => boolean = () => {
 		alert('Event detected - no action');
 		return true;
@@ -178,27 +189,48 @@ const DashboardScreen: React.FC = () => {
 					</View>
 
 					<View style={styles.buttons}>
-						<TouchableOpacity
-							onPress={() => handleIncommingShipmentsPress()}
-							style={styles.button}
-						>
-							<Image source={incomming} resizeMode="contain" />
-							<Text style={styles.text}>Incomming Shipments</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={() => handleOutgoingShipmentsPress()}
-							style={styles.button}
-						>
-							<Image source={outgoing} resizeMode="contain" />
-							<Text style={styles.text}>Outgoing Shipments</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={() => handleNewPackagePress()}
-							style={styles.button}
-						>
-							<Image source={newPackage} resizeMode="contain" />
-							<Text style={styles.text}>New Shipment</Text>
-						</TouchableOpacity>
+						{mode === 'COURIER' ? (
+							<>
+								<TouchableOpacity
+									onPress={() => handleViewAssignmentsPress()}
+									style={styles.button}
+								>
+									<Image source={incomming} resizeMode="contain" />
+									<Text style={styles.text}>View Assignments</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									onPress={() => handleStartDrivingPress()}
+									style={styles.button}
+								>
+									<Image source={outgoing} resizeMode="contain" />
+									<Text style={styles.text}>Start Driving</Text>
+								</TouchableOpacity>
+							</>
+						) : (
+							<>
+								<TouchableOpacity
+									onPress={() => handleIncommingShipmentsPress()}
+									style={styles.button}
+								>
+									<Image source={incomming} resizeMode="contain" />
+									<Text style={styles.text}>Incomming Shipments</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									onPress={() => handleOutgoingShipmentsPress()}
+									style={styles.button}
+								>
+									<Image source={outgoing} resizeMode="contain" />
+									<Text style={styles.text}>Outgoing Shipments</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									onPress={() => handleNewPackagePress()}
+									style={styles.button}
+								>
+									<Image source={newPackage} resizeMode="contain" />
+									<Text style={styles.text}>New Shipment</Text>
+								</TouchableOpacity>
+							</>
+						)}
 					</View>
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>

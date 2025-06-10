@@ -25,18 +25,23 @@ import { Image } from 'react-native';
 
 const SettingsScreen: React.FC = () => {
 	const [role, setRole] = useState<string | null>(null);
+	const [mode, setMode] = useState<string | null>(null);
 
 	useEffect(() => {
-		const fetchRole = async () => {
+		const fetchData = async () => {
 			try {
-				const storedRole = await SecureStore.getItemAsync('role');
+				const [storedRole, storedMode] = await Promise.all([
+					SecureStore.getItemAsync('role'),
+					SecureStore.getItemAsync('mode'),
+				]);
 				setRole(storedRole);
+				setMode(storedMode || 'USER');
 			} catch (error) {
-				console.error('Error fetching role from SecureStore:', error);
+				console.error('Error fetching data from SecureStore:', error);
 			}
 		};
 
-		fetchRole();
+		fetchData();
 	}, []);
 
 	const handleEditAccountDataPress: () => void = () => {
@@ -83,8 +88,17 @@ const SettingsScreen: React.FC = () => {
 		alert('not implemented');
 	};
 
-	const handleChangeModePress: () => void = () => {
-		alert('Change Mode not implemented');
+	const handleChangeModePress: () => void = async () => {
+		try {
+			const currentMode = (await SecureStore.getItemAsync('mode')) || 'USER';
+			const newMode = currentMode === 'USER' ? 'COURIER' : 'USER';
+			await SecureStore.setItemAsync('mode', newMode);
+			setMode(newMode);
+			Alert.alert('Success', `Mode changed to ${newMode}`);
+		} catch (error) {
+			console.error('Error changing mode:', error);
+			Alert.alert('Error', 'Failed to change mode');
+		}
 	};
 
 	const handleBackPress: () => boolean = () => {
@@ -124,13 +138,15 @@ const SettingsScreen: React.FC = () => {
 							<Image source={incomming} resizeMode="contain" />
 							<Text style={styles.text}>Edit Account Data</Text>
 						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={() => handleEditAddressesPress()}
-							style={styles.button}
-						>
-							<Image source={outgoing} resizeMode="contain" />
-							<Text style={styles.text}>Edit Addresses</Text>
-						</TouchableOpacity>
+						{mode !== 'COURIER' && (
+							<TouchableOpacity
+								onPress={() => handleEditAddressesPress()}
+								style={styles.button}
+							>
+								<Image source={outgoing} resizeMode="contain" />
+								<Text style={styles.text}>Edit Addresses</Text>
+							</TouchableOpacity>
+						)}
 						<TouchableOpacity
 							onPress={() => handleChangePasswordPress()}
 							style={styles.button}
