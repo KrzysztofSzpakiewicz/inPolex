@@ -135,11 +135,17 @@ const DashboardScreen: React.FC = () => {
 	};
 
 	const handleIncommingShipmentsPress: () => void = () => {
-		alert('Incomming Shipments no route');
+		router.push({
+			pathname: '/PackagesScreen/IncomingOutgoingScreen',
+			params: { mode: 'incoming' },
+		});
 	};
 
 	const handleOutgoingShipmentsPress: () => void = () => {
-		alert('Outgoing Shipments no route');
+		router.push({
+			pathname: '/PackagesScreen/IncomingOutgoingScreen',
+			params: { mode: 'outgoing' },
+		});
 	};
 
 	const handleViewAssignmentsPress: () => void = () => {

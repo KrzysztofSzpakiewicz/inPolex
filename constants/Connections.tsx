@@ -144,6 +144,51 @@ export const putSingleAddress: (
 	});
 };
 
+export const getUserPackages = async (userId: number, status: string): Promise<any[]> => {
+	try {
+		// Log input parameters
+		console.log('getUserPackages called with:', { userId, status });
+
+		// Fetch token and log it
+		const token = await SecureStore.getItemAsync('token');
+		console.log('Retrieved token:', token ? 'Token present' : 'No token found');
+
+		// Make API request
+		const response: AxiosResponse = await axios.get(`${API_URL}/package/user/${userId}`, {
+			headers: {
+				Authorization: token ? `Bearer ${token}` : undefined,
+			},
+		});
+
+		// Log the response data
+		console.log('API response data:', response.data);
+
+		return response.data; // Return the fetched data
+	} catch (error) {
+		// Log detailed error information
+		console.error('Error fetching packages:', {
+			error: error instanceof Error ? error.message : error,
+			stack: error instanceof Error ? error.stack : undefined,
+		});
+		throw error; // Rethrow the error to handle it in the component
+	}
+};
+
+export const postPackageData: (payload: any, packageId: number) => Promise<AxiosResponse> = async (
+	payload: any,
+	packageId: number,
+): Promise<AxiosResponse> => {
+	console.log('Sending to', `${API_URL}/package/${packageId}`);
+	console.log('Payload', payload);
+
+	const token = await SecureStore.getItemAsync('token');
+	return await axios.post(`${API_URL}/package/${packageId}`, payload, {
+		headers: {
+			Authorization: token ? `Bearer ${token}` : undefined,
+		},
+	});
+};
+
 export const postNewPackage: () => Promise<AxiosResponse> = async (): Promise<AxiosResponse> => {
 	const token = await SecureStore.getItemAsync('token');
 	return await axios.post(

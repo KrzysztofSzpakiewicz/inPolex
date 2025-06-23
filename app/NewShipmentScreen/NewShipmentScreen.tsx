@@ -22,8 +22,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 import imPolex from '../../assets/inPolEx.png';
 import { useLocalSearchParams } from 'expo-router';
-import { searchUserByUsername, postCreatePaymentIntent } from '../../constants/Connections'; // Added postCreatePaymentIntent import
+import {
+	searchUserByUsername,
+	postCreatePaymentIntent,
+	postPackageData,
+} from '../../constants/Connections';
 import { AxiosResponse } from 'axios';
+import axios from 'axios';
+import { API_URL } from '../../constants/Connections';
 
 // Type definitions for props
 interface Address {
@@ -74,10 +80,12 @@ const NewShipmentScreen: React.FC = () => {
 	let parsedData: ShipmentData | null = null;
 	const [searchText, setSearchText] = useState('');
 	const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
+	const [searchedUserId, setSearchedUserId] = useState<number | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
 	const [selectedDeliveryId, setSelectedDeliveryId] = useState<number | null>(null);
 	const [paymentAmount, setPaymentAmount] = useState<number>(1000); // Amount in cents
-	const [searchedAddresses, setSearchedAddresses] = useState<Address[]>([]); // State for searched addresses
+	const [senderId, setSenderId] = useState<number | null>(null);
+	const [searchedAddresses, setSearchedAddresses] = useState<Address[]>([]);
 	const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
 	try {
@@ -85,6 +93,26 @@ const NewShipmentScreen: React.FC = () => {
 	} catch (error) {
 		console.error('Error parsing data:', error);
 	}
+
+	// Fetch senderId from SecureStore on component mount
+	useEffect(() => {
+		const fetchSenderId = async () => {
+			try {
+				const id = await SecureStore.getItemAsync('id');
+				if (id) {
+					setSenderId(parseInt(id, 10));
+				} else {
+					console.error('No senderId found in SecureStore');
+					alert('Error: User ID not found. Please log in again.');
+				}
+			} catch (error) {
+				console.error('Error fetching senderId from SecureStore:', error);
+				alert('Error retrieving user ID.');
+			}
+		};
+
+		fetchSenderId();
+	}, []);
 
 	const handleBackPress = () => {
 		router.replace('/DashboardScreen/DashboardScreen');
@@ -100,6 +128,8 @@ const NewShipmentScreen: React.FC = () => {
 		try {
 			const response: AxiosResponse = await searchUserByUsername(searchText);
 			const addresses = response.data.adresses || [];
+			console.log(response.data.userId);
+			setSearchedUserId(response.data.userId);
 			setSearchedAddresses(addresses);
 			if (addresses.length === 0) {
 				alert('No addresses found for this username.');
@@ -118,10 +148,15 @@ const NewShipmentScreen: React.FC = () => {
 			return;
 		}
 
+		if (!senderId) {
+			alert('Error: User ID not loaded. Please try again.');
+			return;
+		}
+
 		try {
 			// Make POST request to create payment intent
 			const response: AxiosResponse = await postCreatePaymentIntent({
-				amount: paymentAmount * 100, // Amount in cents
+				amount: paymentAmount,
 				currency: 'pln',
 				packageId: parsedData?.packageId,
 			});
@@ -154,6 +189,27 @@ const NewShipmentScreen: React.FC = () => {
 				alert(`Payment failed: ${paymentError.message}`);
 			} else {
 				alert('Payment successful!');
+
+				// Send package data after successful payment
+				const packageData = {
+					senderId: senderId,
+					senderAddressId: selectedAddressId,
+					createdAt: new Date().toISOString(),
+					packageSizeId: selectedPackageId,
+					price: parseFloat((paymentAmount / 100).toFixed(2)),
+					receiverId: searchedUserId,
+					receiverAddressId: selectedAddressId,
+					deliveryTimeId: selectedDeliveryId,
+				};
+
+				try {
+					await postPackageData(packageData, parsedData?.packageId);
+					console.log('Package data sent successfully');
+					alert('Package data sent successfully!');
+				} catch (error) {
+					console.error('Error sending package data:', error);
+					alert('Error sending package data');
+				}
 			}
 		} catch (error) {
 			console.error('Payment error:', error);
