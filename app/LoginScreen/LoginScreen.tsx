@@ -40,10 +40,10 @@ const LoginScreen: React.FC = () => {
 
 		// 	return false;
 		// }
-		if (!password.match(passwordRegex)) {
-			showNotification('warning', 'Warning', 'Wrong password');
-			return false;
-		}
+		// if (!password.match(passwordRegex)) {
+		// 	showNotification('warning', 'Warning', 'Wrong password');
+		// 	return false;
+		// }
 		return true;
 	};
 

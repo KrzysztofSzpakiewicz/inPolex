@@ -189,6 +189,37 @@ export const postPackageData: (payload: any, packageId: number) => Promise<Axios
 	});
 };
 
+export const postSetAvailability = async (available: boolean): Promise<AxiosResponse> => {
+	try {
+		const token = await SecureStore.getItemAsync('token');
+		const id = await SecureStore.getItemAsync('id');
+
+		if (!token || !id) {
+			console.error('Missing token or id');
+			throw new Error('Authentication credentials missing');
+		}
+
+		const url = `${API_URL}/courier/${id}/availability?isAvailable=${available}`;
+		console.log('Sending POST to:', url);
+
+		const response = await axios.post(
+			url,
+			{ courierId: 202, isAvailable: available },
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			},
+		);
+
+		console.log('Response from postSetAvailability:', response.data);
+		return response;
+	} catch (error) {
+		console.error('Error in postSetAvailability:', error);
+		throw error;
+	}
+};
+
 export const postNewPackage: () => Promise<AxiosResponse> = async (): Promise<AxiosResponse> => {
 	const token = await SecureStore.getItemAsync('token');
 	return await axios.post(

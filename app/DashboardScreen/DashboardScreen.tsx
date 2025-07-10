@@ -219,15 +219,9 @@ const DashboardScreen: React.FC = () => {
 									style={styles.button}
 								>
 									<Image source={incomming} resizeMode="contain" />
-									<Text style={styles.text}>Incomming Shipments</Text>
+									<Text style={styles.text}>Shipments</Text>
 								</TouchableOpacity>
-								<TouchableOpacity
-									onPress={() => handleOutgoingShipmentsPress()}
-									style={styles.button}
-								>
-									<Image source={outgoing} resizeMode="contain" />
-									<Text style={styles.text}>Outgoing Shipments</Text>
-								</TouchableOpacity>
+
 								<TouchableOpacity
 									onPress={() => handleNewPackagePress()}
 									style={styles.button}

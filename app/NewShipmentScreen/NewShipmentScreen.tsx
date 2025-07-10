@@ -82,8 +82,12 @@ const NewShipmentScreen: React.FC = () => {
 	const [selectedPackageId, setSelectedPackageId] = useState<number | null>(null);
 	const [searchedUserId, setSearchedUserId] = useState<number | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+	const [selectedAddressIdMy, setSelectedAddressIdMy] = useState<number | null>(null);
 	const [selectedDeliveryId, setSelectedDeliveryId] = useState<number | null>(null);
 	const [paymentAmount, setPaymentAmount] = useState<number>(1000); // Amount in cents
+	const [packagePrice, setPackagePrice] = useState<number>(0);
+	const [deliveryPrice, setDeliveryPrice] = useState<number>(0);
+	const totalAmount = packagePrice + deliveryPrice;
 	const [senderId, setSenderId] = useState<number | null>(null);
 	const [searchedAddresses, setSearchedAddresses] = useState<Address[]>([]);
 	const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -156,7 +160,7 @@ const NewShipmentScreen: React.FC = () => {
 		try {
 			// Make POST request to create payment intent
 			const response: AxiosResponse = await postCreatePaymentIntent({
-				amount: paymentAmount,
+				amount: totalAmount,
 				currency: 'pln',
 				packageId: parsedData?.packageId,
 			});
@@ -193,10 +197,10 @@ const NewShipmentScreen: React.FC = () => {
 				// Send package data after successful payment
 				const packageData = {
 					senderId: senderId,
-					senderAddressId: selectedAddressId,
+					senderAddressId: selectedAddressIdMy,
 					createdAt: new Date().toISOString(),
 					packageSizeId: selectedPackageId,
-					price: parseFloat((paymentAmount / 100).toFixed(2)),
+					price: totalAmount / 100,
 					receiverId: searchedUserId,
 					receiverAddressId: selectedAddressId,
 					deliveryTimeId: selectedDeliveryId,
@@ -335,10 +339,10 @@ const NewShipmentScreen: React.FC = () => {
 											key={address.id}
 											style={[
 												styles.itemContainer,
-												selectedAddressId === address.id &&
+												selectedAddressIdMy === address.id &&
 													styles.selectedPackageItem,
 											]}
-											onPress={() => setSelectedAddressId(address.id)}
+											onPress={() => setSelectedAddressIdMy(address.id)}
 										>
 											<Text style={styles.itemTitle}>
 												Address {index + 1}:
@@ -388,7 +392,7 @@ const NewShipmentScreen: React.FC = () => {
 											]}
 											onPress={() => {
 												setSelectedPackageId(pkg.id);
-												setPaymentAmount(pkg.price * 100);
+												setPackagePrice(pkg.price * 100);
 											}}
 										>
 											<Text style={styles.itemTitle}>
@@ -438,9 +442,7 @@ const NewShipmentScreen: React.FC = () => {
 											]}
 											onPress={() => {
 												setSelectedDeliveryId(delivery.id);
-												setPaymentAmount(
-													prev => prev + delivery.price * 100,
-												);
+												setDeliveryPrice(delivery.price * 100);
 											}}
 										>
 											<Text style={styles.itemTitle}>
@@ -479,7 +481,7 @@ const NewShipmentScreen: React.FC = () => {
 								onPress={handleProceedToPayment}
 							>
 								<Text style={styles.buttonText}>
-									Proceed to Payment ({(paymentAmount / 100).toFixed(2)} PLN)
+									Proceed to Payment ({(totalAmount / 100).toFixed(2)} PLN)
 								</Text>
 							</TouchableOpacity>
 						</View>

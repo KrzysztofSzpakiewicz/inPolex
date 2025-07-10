@@ -61,10 +61,9 @@ const IncomingOutgoingScreen: React.FC<IncomingOutgoingScreenProps> = ({ route }
 					mode === 'incoming' ? 'DELIVERED' : 'IN_TRANSIT',
 				);
 				// Filter packages based on mode and user ID
-				const filteredPackages = fetchedPackages.filter((pkg: Package) =>
-					mode === 'incoming' ? pkg.receiver.id === userInt : pkg.sender.id === userInt,
-				);
-				setPackages(filteredPackages);
+
+				//setPackages(filteredPackages);
+				setPackages(fetchedPackages);
 			} catch (error) {
 				console.error('Failed to fetch packages:', error);
 				setPackages([]);
@@ -97,7 +96,7 @@ const IncomingOutgoingScreen: React.FC<IncomingOutgoingScreenProps> = ({ route }
 		>
 			<Image source={mode === 'incoming' ? incomming : outgoing} style={styles.packageIcon} />
 			<View style={styles.packageDetails}>
-				<Text style={styles.packageTitle}>Package ID: {item.id}</Text>
+				{/* <Text style={styles.packageTitle}>Package ID: {item.id}</Text> */}
 				<Text style={styles.packageText}>Status: {item.packageStatus || 'Unknown'}</Text>
 				<Text style={styles.packageText}>Size: {item.packageSize.size}</Text>
 				<Text style={styles.packageText}>Price: ${item.price.toFixed(2)}</Text>

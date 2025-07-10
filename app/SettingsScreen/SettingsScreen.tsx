@@ -22,6 +22,7 @@ import incomming from '../../assets/incomming.png';
 import outgoing from '../../assets/outgoing.png';
 import newPackage from '../../assets/newPackage.png';
 import { Image } from 'react-native';
+import { postSetAvailability } from '@/constants/Connections';
 
 const SettingsScreen: React.FC = () => {
 	const [role, setRole] = useState<string | null>(null);
@@ -100,6 +101,16 @@ const SettingsScreen: React.FC = () => {
 			Alert.alert('Error', 'Failed to change mode');
 		}
 	};
+	const handlaAvailable = async (val: boolean) => {
+  try {
+    const response = await postSetAvailability(val);
+    console.log('Availability set successfully:', response.data);
+    Alert.alert('Success', `Availability set to ${val ? 'Available' : 'Not Available'}`);
+  } catch (error) {
+    console.error('Error setting availability:', error);
+    Alert.alert('Error', 'Failed to set availability. Please try again.');
+  }
+};
 
 	const handleBackPress: () => boolean = () => {
 		router.replace('/DashboardScreen/DashboardScreen');
@@ -145,6 +156,26 @@ const SettingsScreen: React.FC = () => {
 							>
 								<Image source={outgoing} resizeMode="contain" />
 								<Text style={styles.text}>Edit Addresses</Text>
+							</TouchableOpacity>
+						)}
+
+						{mode !== 'COURIER' && (
+							<TouchableOpacity
+								onPress={() => handlaAvailable(true)}
+								style={styles.button}
+							>
+								<Image source={outgoing} resizeMode="contain" />
+								<Text style={styles.text}>Be Available</Text>
+							</TouchableOpacity>
+						)}
+
+						{mode !== 'COURIER' && (
+							<TouchableOpacity
+								onPress={() => handlaAvailable(false)}
+								style={styles.button}
+							>
+								<Image source={outgoing} resizeMode="contain" />
+								<Text style={styles.text}>Not Available</Text>
 							</TouchableOpacity>
 						)}
 						<TouchableOpacity
