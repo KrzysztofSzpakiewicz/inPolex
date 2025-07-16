@@ -47,9 +47,7 @@ const EditAddressesScreen: React.FC = () => {
 		router.replace('/SettingsScreen/subScreens/MapScreen');
 	};
 
-	const handleDeleteAddress = (addressId: number) => {
-		// Pusta metoda do usuwania adresu - do zaimplementowania w przyszłości
-	};
+	const handleDeleteAddress = (addressId: number) => {};
 
 	const handleEditAddress = (address: Address) => {
 		router.push({
