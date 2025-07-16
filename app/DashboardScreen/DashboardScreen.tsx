@@ -1,0 +1,241 @@
+import * as SecureStore from 'expo-secure-store';
+import React, { useEffect, useState } from 'react';
+import BackButton from '../../components/BackButton';
+import {
+	View,
+	Text,
+	Keyboard,
+	KeyboardAvoidingView,
+	Platform,
+	TouchableWithoutFeedback,
+	BackHandler,
+	NativeEventSubscription,
+	Alert,
+	TouchableOpacity,
+} from 'react-native';
+import { styles } from './DashboardScreen.styles';
+import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import imPolex from '../../assets/inPolEx.png';
+import incomming from '../../assets/incomming.png';
+import outgoing from '../../assets/outgoing.png';
+import newPackage from '../../assets/newPackage.png';
+import { useShowNotification, ShowNotificationFunction } from '../../components/Notification';
+import axios, { AxiosResponse } from 'axios';
+import { postNewPackage, sendVerificationEmail } from '../../constants/Connections';
+import { Image } from 'react-native';
+import { StateString } from '@/types';
+import { CompatClient, Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+
+const DashboardScreen: React.FC = () => {
+	const { showNotification }: { showNotification: ShowNotificationFunction } =
+		useShowNotification();
+	let userId: string | null = null;
+	let userInt: number = 0;
+	const [stompClient, setStompClient] = useState<CompatClient | null>(null);
+	let response: AxiosResponse;
+	const [topicName, setTopicName]: StateString = useState<string>('');
+	const [mode, setMode] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchMode = async () => {
+			try {
+				const storedMode = await SecureStore.getItemAsync('mode');
+				setMode(storedMode || 'USER');
+			} catch (error) {
+				console.error('Error fetching mode from SecureStore:', error);
+			}
+		};
+
+		fetchMode();
+	}, []);
+
+	const handleSettingsPress: () => void = () => {
+		router.push({
+			pathname: '/SettingsScreen/SettingsScreen',
+		});
+	};
+
+	const handleNewPackagePress: () => Promise<void> = async () => {
+		try {
+			await postData();
+			userId = await SecureStore.getItemAsync('id');
+			userInt = Number(userId);
+			await connectToWs();
+			const data = JSON.stringify(response);
+			router.push({
+				pathname: '/NewShipmentScreen/NewShipmentScreen',
+				params: { data },
+			});
+		} catch (error) {
+			console.log('Post failed, navigation prevented.');
+		}
+	};
+
+	const connectToWs: () => void = (): void => {
+		const socket: WebSocket = new SockJS('http://89.66.26.232:8080/ws');
+		const client: CompatClient = Stomp.over(socket);
+
+		client.debug = () => {};
+
+		client.connect(
+			{ userId: userInt },
+			() => {
+				setStompClient(client);
+				connectedToWs(client);
+			},
+			(error: string) => {
+				console.error('WebSocket connection error:', error);
+				setTimeout(() => connectToWs(), 3000);
+			},
+		);
+	};
+
+	const connectedToWs: (client: CompatClient) => void = (client: CompatClient) => {
+		if (client) {
+			client.subscribe(`/topic/package-data`, messageRecivedFromWs);
+		} else {
+			console.error('STOMP client is not initialized properly.');
+		}
+	};
+
+	const messageRecivedFromWs: (payload: { body: string }) => void = (payload: {
+		body: string;
+	}) => {
+		console.log(payload.body);
+	};
+
+	const postData: () => Promise<void> = async (): Promise<void> => {
+		try {
+			console.log('Sending requrest');
+			response = await postNewPackage();
+			setTopicName(response.data.topicName);
+			console.log('Response:', response.data.topicName);
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				if (error.response?.data?.errors) {
+					const errorMessages: string = error.response.data.errors.join(' ');
+					showNotification('error', 'Error', errorMessages);
+				} else {
+					console.log(error.response?.data?.message);
+					showNotification(
+						'error',
+						'Error',
+						error.response?.data?.message || 'An unexpected error occurred.',
+					);
+				}
+			} else {
+				console.error('Unexpected error:', error);
+				showNotification('error', 'Error', 'An unexpected error occurred.');
+			}
+			throw error;
+		}
+	};
+
+	const handleIncommingShipmentsPress: () => void = () => {
+		router.push({
+			pathname: '/PackagesScreen/IncomingOutgoingScreen',
+			params: { mode: 'incoming' },
+		});
+	};
+
+	const handleOutgoingShipmentsPress: () => void = () => {
+		router.push({
+			pathname: '/PackagesScreen/IncomingOutgoingScreen',
+			params: { mode: 'outgoing' },
+		});
+	};
+
+	const handleViewAssignmentsPress: () => void = () => {
+		alert('View Assignments no route');
+	};
+
+	const handleStartDrivingPress: () => void = () => {
+		alert('Start Driving no route');
+	};
+
+	const handleBackPress: () => boolean = () => {
+		alert('Event detected - no action');
+		return true;
+	};
+
+	const handleNavigation: (screen: string) => void = (screen: string) => {
+		router.push(`/${screen}`);
+	};
+
+	useEffect(() => {
+		const subscription: NativeEventSubscription = BackHandler.addEventListener(
+			'hardwareBackPress',
+			handleBackPress,
+		);
+
+		return () => {
+			subscription.remove();
+		};
+	}, []);
+
+	return (
+		<SafeAreaView style={styles.container}>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+					style={styles.container}
+				>
+					<View style={styles.backButton}>
+						<View style={{ width: 30, height: 30 }}></View>
+						<Image source={imPolex} resizeMode="contain" />
+						<Icon
+							name="settings"
+							size={30}
+							color={styles.titleText.color}
+							onPress={handleSettingsPress}
+						/>
+					</View>
+
+					<View style={styles.buttons}>
+						{mode === 'COURIER' ? (
+							<>
+								<TouchableOpacity
+									onPress={() => handleViewAssignmentsPress()}
+									style={styles.button}
+								>
+									<Image source={incomming} resizeMode="contain" />
+									<Text style={styles.text}>View Assignments</Text>
+								</TouchableOpacity>
+								<TouchableOpacity
+									onPress={() => handleStartDrivingPress()}
+									style={styles.button}
+								>
+									<Image source={outgoing} resizeMode="contain" />
+									<Text style={styles.text}>Start Driving</Text>
+								</TouchableOpacity>
+							</>
+						) : (
+							<>
+								<TouchableOpacity
+									onPress={() => handleIncommingShipmentsPress()}
+									style={styles.button}
+								>
+									<Image source={incomming} resizeMode="contain" />
+									<Text style={styles.text}>Shipments</Text>
+								</TouchableOpacity>
+
+								<TouchableOpacity
+									onPress={() => handleNewPackagePress()}
+									style={styles.button}
+								>
+									<Image source={newPackage} resizeMode="contain" />
+									<Text style={styles.text}>New Shipment</Text>
+								</TouchableOpacity>
+							</>
+						)}
+					</View>
+				</KeyboardAvoidingView>
+			</TouchableWithoutFeedback>
+		</SafeAreaView>
+	);
+};
+
+export default DashboardScreen;

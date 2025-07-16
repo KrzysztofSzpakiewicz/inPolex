@@ -34,6 +34,12 @@ module.exports = {
 		},
 	},
 	rules: {
+		'import/no-unresolved': [
+			'error',
+			{
+				ignore: ['@env'], // Ignore unresolved imports for @env
+			},
+		],
 		'@typescript-eslint/typedef': [
 			'error',
 			{
@@ -55,7 +61,7 @@ module.exports = {
 				endOfLine: 'auto',
 				singleQuote: true,
 				semi: true,
-				trailingComma: 'es5',
+				trailingComma: 'all', // Changed from 'es5' to 'all'
 				tabWidth: 4,
 				useTabs: true,
 			},
